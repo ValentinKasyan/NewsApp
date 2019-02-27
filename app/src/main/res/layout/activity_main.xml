@@ -1,87 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipeRefresh"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="com.example.android.news.MainActivity">
 
 
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
-        <RelativeLayout
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="250dp">
+            android:layout_height="wrap_content">
 
 
-            <com.github.florent37.diagonallayout.DiagonalLayout
-                android:id="@+id/diagonalLayout"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                app:diagonal_angle="5"
-                app:diagonal_direction="left"
-                app:diagonal_position="bottom">
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab_text_1" />
 
 
-                <com.flaviofaria.kenburnsview.KenBurnsView
-                    android:id="@+id/top_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"></com.flaviofaria.kenburnsview.KenBurnsView>
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItem2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab_text_2" />
 
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItem3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab_text_3" />
 
 
-                    <TextView
-                        android:id="@+id/top_author"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top|left"
-                        android:layout_marginBottom="30dp"
-                        android:layout_marginLeft="30dp"
-                        android:fontFamily="sans-serif-light"
-                        android:textColor="#ffffff"
-                        android:textSize="25sp" />
+        </android.support.design.widget.TabLayout>
+    </android.support.design.widget.AppBarLayout>
 
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentStart="true"
-                        android:background="#A0333639"
-                        android:orientation="vertical">
+    <android.support.v4.view.ViewPager
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
 
-                        <TextView
-                            android:id="@+id/top_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="top|left"
-                            android:layout_marginBottom="30dp"
-                            android:layout_marginLeft="30dp"
-                            android:fontFamily="sans-serif-light"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="#ffffff"/>
-                    </LinearLayout>
-                </RelativeLayout>
-            </com.github.florent37.diagonallayout.DiagonalLayout>
+        />
 
 
-        </RelativeLayout>
-        <android.support.v7.widget.RecyclerView
-            android:layout_below="@id/diagonalLayout"
-            android:id="@+id/lstNews"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
-
-
-    </LinearLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
+</android.support.design.widget.CoordinatorLayout>
