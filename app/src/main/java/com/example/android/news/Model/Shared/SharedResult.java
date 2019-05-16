@@ -1,12 +1,12 @@
 
-package com.example.android.news.Model;
+package com.example.android.news.Model.Shared;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Results {
+public class SharedResult {
 
     @SerializedName("url")
     @Expose
@@ -17,18 +17,18 @@ public class Results {
     @SerializedName("subsection")
     @Expose
     private String subsection;
-    @SerializedName("email_count")
+    @SerializedName("share_count")
     @Expose
-    private Long emailCount;
+    private Integer shareCount;
     @SerializedName("count_type")
     @Expose
     private String countType;
     @SerializedName("column")
     @Expose
-    private String column;
+    private Object column;
     @SerializedName("eta_id")
     @Expose
-    private Long etaId;
+    private Integer etaId;
     @SerializedName("section")
     @Expose
     private String section;
@@ -64,10 +64,7 @@ public class Results {
     private String updated;
     @SerializedName("media")
     @Expose
-    private List<Medium> media = null;
-    @SerializedName("uri")
-    @Expose
-    private String uri;
+    private List<SharedMedia> media = null;
 
     public String getUrl() {
         return url;
@@ -93,12 +90,12 @@ public class Results {
         this.subsection = subsection;
     }
 
-    public Long getEmailCount() {
-        return emailCount;
+    public Integer getShareCount() {
+        return shareCount;
     }
 
-    public void setEmailCount(Long emailCount) {
-        this.emailCount = emailCount;
+    public void setShareCount(Integer shareCount) {
+        this.shareCount = shareCount;
     }
 
     public String getCountType() {
@@ -109,19 +106,19 @@ public class Results {
         this.countType = countType;
     }
 
-    public String getColumn() {
+    public Object getColumn() {
         return column;
     }
 
-    public void setColumn(String column) {
+    public void setColumn(Object column) {
         this.column = column;
     }
 
-    public Long getEtaId() {
+    public Integer getEtaId() {
         return etaId;
     }
 
-    public void setEtaId(Long etaId) {
+    public void setEtaId(Integer etaId) {
         this.etaId = etaId;
     }
 
@@ -213,20 +210,13 @@ public class Results {
         this.updated = updated;
     }
 
-    public List<Medium> getMedia() {
+    public List<SharedMedia> getMedia() {
         return media;
     }
 
-    public void setMedia(List<Medium> media) {
+    public void setMedia(List<SharedMedia> media) {
         this.media = media;
     }
 
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
 
 }

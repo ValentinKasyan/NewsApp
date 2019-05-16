@@ -1,5 +1,5 @@
 
-package com.example.android.news.Model;
+package com.example.android.news.Model.Emailed;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -19,7 +19,7 @@ public class EmailedNews {
     private Integer numResults;
     @SerializedName("results")
     @Expose
-    private List<Results> results = null;
+    private List<EmailedResults> results = null;
 
     public String getStatus() {
         return status;
@@ -45,11 +45,11 @@ public class EmailedNews {
         this.numResults = numResults;
     }
 
-    public List<Results> getResults() {
+    public List<EmailedResults> getResults() {
         return results;
     }
 
-    public void setResults(List<Results> results) {
+    public void setResults(List<EmailedResults> results) {
         this.results = results;
     }
 

@@ -13,7 +13,7 @@
         android:orientation="horizontal"
         android:weightSum="10">
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/article_image"
+            android:id="@+id/article_image_emailed"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
@@ -25,12 +25,12 @@
            android:layout_width="0dp"
            android:layout_height="wrap_content">
            <TextView
-               android:id="@+id/article_title"
+               android:id="@+id/article_title_emailed"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:text="articleTitle"/>
            <com.github.curioustechizen.ago.RelativeTimeTextView
-               android:id="@+id/article_time"
+               android:id="@+id/article_time_emailed"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:textStyle="italic"

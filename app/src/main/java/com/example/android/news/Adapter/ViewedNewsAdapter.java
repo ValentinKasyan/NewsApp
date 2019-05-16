@@ -1,5 +1,6 @@
 package com.example.android.news.Adapter;
 
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.android.news.Interface.ItemClickListener;
-import com.example.android.news.Model.Emailed.EmailedResults;
+import com.example.android.news.Model.Viewed.ViewedResult;
 import com.example.android.news.R;
 import com.example.android.news.Remote.DetailArticle;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
@@ -20,20 +21,19 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
-class EmailedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+class ViewedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     private ItemClickListener itemClickListener;
     TextView article_title;
     RelativeTimeTextView article_time;
     CircleImageView article_image;
 
-    EmailedNewsViewHolder(View itemView) {
+    ViewedNewsViewHolder(View itemView) {
         super(itemView);
-        article_image = (CircleImageView) itemView.findViewById(R.id.article_image_emailed);
-        article_title = (TextView) itemView.findViewById(R.id.article_title_emailed);
-        article_time = (RelativeTimeTextView) itemView.findViewById(R.id.article_time_emailed);
+        article_image = (CircleImageView) itemView.findViewById(R.id.article_image_viewed);
+        article_title = (TextView) itemView.findViewById(R.id.article_title_viewed);
+        article_time = (RelativeTimeTextView) itemView.findViewById(R.id.article_time_viewed);
 
-        itemView.setOnClickListener(this);
+        itemView.setOnClickListener((View.OnClickListener) this);
     }
 
     void setItemClickListener(ItemClickListener itemClickListener) {
@@ -46,27 +46,27 @@ class EmailedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     }
 }
 
-public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHolder> {
+public class ViewedNewsAdapter extends RecyclerView.Adapter<ViewedNewsViewHolder> {
 
-    private List<EmailedResults> articleList;
+    private List<ViewedResult> articleList;
     private Context context;
 
-    public EmailedNewsAdapter(List<EmailedResults> articleList, Context context) {
+    public ViewedNewsAdapter(List<ViewedResult> articleList, Context context) {
         this.articleList = articleList;
         this.context = context;
     }
 
 
     @Override
-    public EmailedNewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewedNewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View itemView = inflater.inflate(R.layout.news_layout_emailed, parent, false);
-        return new EmailedNewsViewHolder(itemView);
+        View itemView = inflater.inflate(R.layout.news_layout_viewed, parent, false);
+        return new ViewedNewsViewHolder(itemView);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(EmailedNewsViewHolder holder, int position) {
+    public void onBindViewHolder(ViewedNewsViewHolder holder, int position) {
         Picasso.get()
                 .load(articleList
                         .get(position).getMedia()

@@ -1,10 +1,10 @@
 
-package com.example.android.news.Model;
+package com.example.android.news.Model.Emailed;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MediaMetadatum {
+public class EmailedMediaMetadata {
 
     @SerializedName("url")
     @Expose

@@ -12,16 +12,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.news.Adapter.EmailedNewsAdapter;
 import com.example.android.news.Common.Common;
 import com.example.android.news.Interface.NewsService;
-import com.example.android.news.Model.EmailedNews;
-import com.example.android.news.Model.Results;
+import com.example.android.news.Model.Emailed.EmailedNews;
+import com.example.android.news.Model.Emailed.EmailedResults;
 import com.example.android.news.R;
-import com.flaviofaria.kenburnsview.KenBurnsView;
-import com.github.florent37.diagonallayout.DiagonalLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -32,8 +31,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EmailedTab extends Fragment {
-    KenBurnsView kbv;
-    DiagonalLayout diagonalLayout;
+
+    ImageView imageViewEmailed;
     SpotsDialog dialog;
     NewsService mService;
     TextView top_author, top_title;
@@ -60,8 +59,18 @@ public class EmailedTab extends Fragment {
                 loadNews(true);
             }
         });
-        diagonalLayout = (DiagonalLayout) rootView.findViewById(R.id.diagonalLayout);
-        diagonalLayout.setOnClickListener(new View.OnClickListener() {
+
+        imageViewEmailed = (ImageView) rootView.findViewById(R.id.top_image_emailed);
+        top_author = (TextView) rootView.findViewById(R.id.top_author);
+        top_title = (TextView) rootView.findViewById(R.id.top_title);
+
+        lstNews = (RecyclerView) rootView.findViewById(R.id.lstNewsEmailed);
+        lstNews.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getContext());
+        lstNews.setLayoutManager(layoutManager);
+        loadNews(false);
+
+        imageViewEmailed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent detail = new Intent(getActivity().getBaseContext(), DetailArticle.class);
@@ -69,34 +78,22 @@ public class EmailedTab extends Fragment {
                 startActivity(detail);
             }
         });
-        kbv = (KenBurnsView) rootView.findViewById(R.id.top_image);
-        top_author = (TextView) rootView.findViewById(R.id.top_author);
-        top_title = (TextView) rootView.findViewById(R.id.top_title);
-
-        lstNews = (RecyclerView) rootView.findViewById(R.id.lstNews);
-        lstNews.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getContext());
-        lstNews.setLayoutManager(layoutManager);
-        loadNews(false);
-
-
         return rootView;
-
-
     }
 
     private void loadNews(boolean isRefreshed) {
         if (!isRefreshed) {
             dialog.show();
-            mService.getNewestArticles()
+            mService.getEmailedArticles()
                     .enqueue(new Callback<EmailedNews>() {
                         @Override
                         public void onResponse(@NonNull Call<EmailedNews> call, @NonNull Response<EmailedNews> response) {
                             if (response.body() != null && response.body().getResults() != null) {
                                 dialog.dismiss();
-                                Results results = response.body().getResults().get(0);
+                                EmailedResults results = response.body().getResults().get(0);
                                 //get first article
                                 if (results != null && results.getMedia().get(0).getMediaMetadata().get(2).getUrl() != null) {
+                                    Log.d(TAG, "response for getImage : " + "response = " + response + "; " + "response.body() = " + response.body());
                                     getImage(response);
                                 }
                                 assert results != null;
@@ -106,7 +103,7 @@ public class EmailedTab extends Fragment {
                                     webHotURL = results.getUrl();
                                 }
                                 //Load remain articles
-                                List<Results> removeFirstItem = response.body().getResults();
+                                List<EmailedResults> removeFirstItem = response.body().getResults();
                                 //Because we already load first item to show on Diagonal Layout
                                 // So we need remove it
                                 removeFirstItem.remove(0);
@@ -115,10 +112,7 @@ public class EmailedTab extends Fragment {
                             } else {
                                 Log.d(TAG, "fail : " + "response = " + response + "; " + "response.body() = " + response.body());
                             }
-
-
                         }
-
 
                         @Override
                         public void onFailure(@NonNull Call<EmailedNews> call, @NonNull Throwable t) {
@@ -127,18 +121,18 @@ public class EmailedTab extends Fragment {
                         }
                     });
 
-
         } else// If from Swipe to Refresh
         {
+
             dialog.show();
-//fetch new data
-            mService.getNewestArticles().enqueue(new Callback<EmailedNews>() {
+            //fetch new data
+            mService.getEmailedArticles().enqueue(new Callback<EmailedNews>() {
                 @Override
                 public void onResponse(@NonNull Call<EmailedNews> call, @NonNull Response<EmailedNews> response) {
                     if (response.body() != null && response.body().getResults() != null) {
                         dialog.dismiss();
-                        Results results = response.body().getResults().get(0);
-//get first article
+                        EmailedResults results = response.body().getResults().get(0);
+                        //get first article
                         if (results != null && results.getMedia().get(0).getMediaMetadata().get(2).getUrl() != null) {
                             getImage(response);
                         }
@@ -148,10 +142,11 @@ public class EmailedTab extends Fragment {
                             top_author.setText(results.getMedia().get(0).getCopyright());
                             webHotURL = results.getUrl();
                         }
-//Load remain articles
-                        List<Results> removeFirstItem = response.body().getResults();
-//Because we already load first item to show on Diagonal Layout
-//So we need remove it
+                        //Load remain articles
+                        List<EmailedResults> removeFirstItem = response.body().getResults();
+
+                        //Because we already load first item to show on Diagonal Layout
+                        // So we need remove it
                         removeFirstItem.remove(0);
                         adapter = new EmailedNewsAdapter(removeFirstItem, getActivity().getBaseContext());
                         lstNews.setAdapter(adapter);
@@ -160,16 +155,13 @@ public class EmailedTab extends Fragment {
                     }
                 }
 
-
                 @Override
                 public void onFailure(Call<EmailedNews> call, Throwable t) {
                     showAlertDialog(t);
                     Log.d(TAG, "fail" + t.getMessage());
                 }
             });
-
-
-//Dismiss refresh progressing
+            //Dismiss refresh progressing
             swipeRefreshLayout.setRefreshing(false);
         }
     }
@@ -177,7 +169,7 @@ public class EmailedTab extends Fragment {
     public void getImage(@NonNull Response<EmailedNews> response) {
         Picasso.get()
                 .load(response.body().getResults().get(0).getMedia().get(0).getMediaMetadata().get(2).getUrl())
-                .into(kbv);
+                .into(imageViewEmailed);
     }
 
     public void showAlertDialog(Throwable throwable) {
@@ -189,4 +181,5 @@ public class EmailedTab extends Fragment {
 
 
     }
+
 }

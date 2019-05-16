@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.news.main">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,28 +15,17 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="250dp">
-
-
-            <com.github.florent37.diagonallayout.DiagonalLayout
-                android:id="@+id/diagonalLayout"
+            <ImageView
+                android:id="@+id/top_image_emailed"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                app:diagonal_angle="5"
-                app:diagonal_direction="left"
-                app:diagonal_position="bottom">
-
-
-                <com.flaviofaria.kenburnsview.KenBurnsView
-                    android:id="@+id/top_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"></com.flaviofaria.kenburnsview.KenBurnsView>
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
 
 
                 <RelativeLayout
+                    android:id="@+id/relativeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-
 
                     <TextView
                         android:id="@+id/top_author"
@@ -48,16 +36,6 @@
                         android:layout_marginLeft="30dp"
                         android:fontFamily="sans-serif-light"
                         android:textSize="25sp" />
-
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentStart="true"
-                        android:background="#A0333639"
-                        android:orientation="vertical">
-
 
                         <TextView
                             android:id="@+id/top_title"
@@ -70,19 +48,15 @@
                             android:textColor="#ffffff"
                             android:textSize="18sp"
                             android:textStyle="bold" />
-                    </LinearLayout>
-                </RelativeLayout>
-            </com.github.florent37.diagonallayout.DiagonalLayout>
 
+                </RelativeLayout>
 
         </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/lstNews"
+            android:id="@+id/lstNewsEmailed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/diagonalLayout"></android.support.v7.widget.RecyclerView>
-
-
+            android:layout_below="@id/relativeLayout"></android.support.v7.widget.RecyclerView>
     </LinearLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

@@ -1,12 +1,12 @@
 
-package com.example.android.news.Model;
+package com.example.android.news.Model.Emailed;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Medium {
+public class EmailedMedia {
 
     @SerializedName("type")
     @Expose
@@ -25,7 +25,7 @@ public class Medium {
     private Integer approvedForSyndication;
     @SerializedName("media-metadata")
     @Expose
-    private List<MediaMetadatum> mediaMetadata = null;
+    private List<EmailedMediaMetadata> mediaMetadata = null;
 
     public String getType() {
         return type;
@@ -67,11 +67,11 @@ public class Medium {
         this.approvedForSyndication = approvedForSyndication;
     }
 
-    public List<MediaMetadatum> getMediaMetadata() {
+    public List<EmailedMediaMetadata> getMediaMetadata() {
         return mediaMetadata;
     }
 
-    public void setMediaMetadata(List<MediaMetadatum> mediaMetadata) {
+    public void setMediaMetadata(List<EmailedMediaMetadata> mediaMetadata) {
         this.mediaMetadata = mediaMetadata;
     }
 

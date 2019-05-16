@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.android.news.Interface.ItemClickListener;
-import com.example.android.news.Model.Results;
+import com.example.android.news.Model.Shared.SharedResult;
 import com.example.android.news.R;
 import com.example.android.news.Remote.DetailArticle;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
@@ -21,17 +21,17 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-class SharedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+class SharedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     private ItemClickListener itemClickListener;
-    TextView article_title;
-    RelativeTimeTextView article_time;
-    CircleImageView article_image;
+    TextView article_title_shared;
+    RelativeTimeTextView article_time_shared;
+    CircleImageView article_image_shared;
 
     SharedNewsViewHolder(View itemView) {
         super(itemView);
-        article_image = (CircleImageView) itemView.findViewById(R.id.article_image);
-        article_title = (TextView) itemView.findViewById(R.id.article_title);
-        article_time = (RelativeTimeTextView) itemView.findViewById(R.id.article_time);
+        article_image_shared = (CircleImageView) itemView.findViewById(R.id.article_image_shared);
+        article_title_shared = (TextView) itemView.findViewById(R.id.article_title_shared);
+        article_time_shared = (RelativeTimeTextView) itemView.findViewById(R.id.article_time_shared);
 
         itemView.setOnClickListener(this);
     }
@@ -46,39 +46,38 @@ class SharedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnCli
     }
 }
 
-public class SharedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHolder> {
-
-    private List<Results> articleList;
+public class SharedNewsAdapter extends RecyclerView.Adapter<SharedNewsViewHolder> {
+    private List<SharedResult> articleList;
     private Context context;
 
-    public SharedNewsAdapter(List<Results> articleList, Context context) {
+    public SharedNewsAdapter(List<SharedResult> articleList, Context context) {
         this.articleList = articleList;
         this.context = context;
     }
 
 
     @Override
-    public EmailedNewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SharedNewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View itemView = inflater.inflate(R.layout.news_layout, parent, false);
-        return new EmailedNewsViewHolder(itemView);
+        View itemView = inflater.inflate(R.layout.news_layout_shared, parent, false);
+        return new SharedNewsViewHolder(itemView);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(EmailedNewsViewHolder holder, int position) {
+    public void onBindViewHolder(SharedNewsViewHolder holder, int position) {
         Picasso.get()
                 .load(articleList
                         .get(position).getMedia()
                         .get(0).getMediaMetadata()
                         .get(2).getUrl())
-                .into(holder.article_image);
+                .into(holder.article_image_shared);
 
 
-        holder.article_title.setText(articleList.get(position).getTitle());
+        holder.article_title_shared.setText(articleList.get(position).getTitle());
 
         String date = articleList.get(position).getPublishedDate();
-        holder.article_time.setText(date);
+        holder.article_time_shared.setText(date);
 
         //set event click
         holder.setItemClickListener(new ItemClickListener() {
