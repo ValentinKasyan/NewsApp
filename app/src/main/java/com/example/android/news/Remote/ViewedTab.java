@@ -34,7 +34,7 @@ public class ViewedTab extends Fragment {
     ImageView imageViewViewed;
     SpotsDialog dialog;
     NewsService mService;
-    TextView top_author, top_title;
+    TextView top_title;
     SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = "ViewedTab";
     String webHotURL = "";
@@ -60,7 +60,6 @@ public class ViewedTab extends Fragment {
         });
 
         imageViewViewed = (ImageView) rootView.findViewById(R.id.top_image_viewed);
-        top_author = (TextView) rootView.findViewById(R.id.top_author_viewed);
         top_title = (TextView) rootView.findViewById(R.id.top_title_viewed);
 
         lstNews = (RecyclerView) rootView.findViewById(R.id.lstNewsViewed);
@@ -98,7 +97,6 @@ public class ViewedTab extends Fragment {
                                 assert results != null;
                                 if (results.getTitle() != null && results.getMedia().get(0).getCopyright() != null && results.getUrl() != null) {
                                     top_title.setText(results.getTitle());
-                                    top_author.setText(results.getMedia().get(0).getCopyright());
                                     webHotURL = results.getUrl();
                                 }
                                 //Load remain articles
@@ -139,7 +137,6 @@ public class ViewedTab extends Fragment {
                         assert results != null;
                         if (results.getTitle() != null && results.getMedia().get(0).getCopyright() != null && results.getUrl() != null) {
                             top_title.setText(results.getTitle());
-                            top_author.setText(results.getMedia().get(0).getCopyright());
                             webHotURL = results.getUrl();
                         }
                         //Load remain articles
@@ -180,7 +177,6 @@ public class ViewedTab extends Fragment {
                 .setPositiveButton("Close", null)
                 .show();
         Log.d(TAG, "fail" + throwable.getLocalizedMessage());
-
 
     }
 }

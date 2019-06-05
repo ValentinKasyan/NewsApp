@@ -65,6 +65,7 @@ public class EmailedResults {
     @SerializedName("media")
     @Expose
     List<EmailedMedia> media = null;
+
     @SerializedName("uri")
     @Expose
     private String uri;

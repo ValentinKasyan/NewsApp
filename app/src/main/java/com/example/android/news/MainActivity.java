@@ -10,11 +10,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.android.news.Remote.EmailedTab;
+import com.example.android.news.Remote.SearchTab;
 import com.example.android.news.Remote.SharedTab;
 import com.example.android.news.Remote.ViewedTab;
 
@@ -31,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private ViewPager mViewPager;
+    private static final String TAG = "MainActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +62,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
+                //responsible for the location of the functional tabs
                 case 0:
+                    SearchTab searchTab = new SearchTab();
+                    return searchTab;
+                case 1:
                     EmailedTab emailedTab = new EmailedTab();
                     return emailedTab;
-                case 1:
+                case 2:
                     SharedTab sharedTab = new SharedTab();
                     return sharedTab;
-                case 2:
+                case 3:
                     ViewedTab viewedTab = new ViewedTab();
                     return viewedTab;
                 default:
@@ -74,37 +82,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 4 total pages.
+            return 4;
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        MenuItem SearchMenuItem = menu.findItem(R.id.action_search);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setQueryHint("Search news ...");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if (query.length() > 2) {
-                    // TODO: 13.05.2019
-                }
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // TODO: 13.05.2019
-                return false;
-            }
-        });
-        // TODO: 13.05.2019  searchMenuItem.getIcon().setVisible(false,false)
-        return super.onCreateOptionsMenu(menu);
-
-    }
 }

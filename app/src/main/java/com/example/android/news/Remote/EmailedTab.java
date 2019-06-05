@@ -35,7 +35,7 @@ public class EmailedTab extends Fragment {
     ImageView imageViewEmailed;
     SpotsDialog dialog;
     NewsService mService;
-    TextView top_author, top_title;
+    TextView top_title;
     SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = " EmailedTab";
     String webHotURL = "";
@@ -56,19 +56,18 @@ public class EmailedTab extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadNews(true);
+                loadNewsEmailed(true);
             }
         });
 
         imageViewEmailed = (ImageView) rootView.findViewById(R.id.top_image_emailed);
-        top_author = (TextView) rootView.findViewById(R.id.top_author);
         top_title = (TextView) rootView.findViewById(R.id.top_title);
 
         lstNews = (RecyclerView) rootView.findViewById(R.id.lstNewsEmailed);
         lstNews.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         lstNews.setLayoutManager(layoutManager);
-        loadNews(false);
+        loadNewsEmailed(false);
 
         imageViewEmailed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +80,7 @@ public class EmailedTab extends Fragment {
         return rootView;
     }
 
-    private void loadNews(boolean isRefreshed) {
+    public void loadNewsEmailed(boolean isRefreshed) {
         if (!isRefreshed) {
             dialog.show();
             mService.getEmailedArticles()
@@ -99,7 +98,6 @@ public class EmailedTab extends Fragment {
                                 assert results != null;
                                 if (results.getTitle() != null && results.getMedia().get(0).getCopyright() != null && results.getUrl() != null) {
                                     top_title.setText(results.getTitle());
-                                    top_author.setText(results.getMedia().get(0).getCopyright());
                                     webHotURL = results.getUrl();
                                 }
                                 //Load remain articles
@@ -139,7 +137,6 @@ public class EmailedTab extends Fragment {
                         assert results != null;
                         if (results.getTitle() != null && results.getMedia().get(0).getCopyright() != null && results.getUrl() != null) {
                             top_title.setText(results.getTitle());
-                            top_author.setText(results.getMedia().get(0).getCopyright());
                             webHotURL = results.getUrl();
                         }
                         //Load remain articles
@@ -179,7 +176,5 @@ public class EmailedTab extends Fragment {
                 .setPositiveButton("Close", null)
                 .show();
 
-
     }
-
 }
