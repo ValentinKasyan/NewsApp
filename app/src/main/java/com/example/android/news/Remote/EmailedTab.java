@@ -1,8 +1,10 @@
 package com.example.android.news.Remote;
 
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -10,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,6 +20,8 @@ import android.widget.TextView;
 
 import com.example.android.news.Adapter.EmailedNewsAdapter;
 import com.example.android.news.Common.Common;
+import com.example.android.news.Database.DBHandler;
+import com.example.android.news.Database.SavedArticles;
 import com.example.android.news.Interface.NewsService;
 import com.example.android.news.Model.Emailed.EmailedNews;
 import com.example.android.news.Model.Emailed.EmailedResults;
@@ -44,6 +49,8 @@ public class EmailedTab extends Fragment {
     RecyclerView lstNews;
     RecyclerView.LayoutManager layoutManager;
 
+    DBHandler dbHandler;
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tab_emailed, container, false);
@@ -67,6 +74,7 @@ public class EmailedTab extends Fragment {
         lstNews.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         lstNews.setLayoutManager(layoutManager);
+        dbHandler = new DBHandler(getContext(), null, null, 1);
         loadNewsEmailed(false);
 
         imageViewEmailed.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +86,7 @@ public class EmailedTab extends Fragment {
             }
         });
         return rootView;
+
     }
 
     public void loadNewsEmailed(boolean isRefreshed) {
@@ -162,6 +171,44 @@ public class EmailedTab extends Fragment {
             swipeRefreshLayout.setRefreshing(false);
         }
     }
+
+    //Floating context menu
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case 121:
+                Log.d(TAG, "pressed add to favorites in Emailed tab");
+                // TODO: 10.06.2019 востановить
+//                String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
+//                String savedImageURL = adapter.getItemImagUrlTransaction(item.getGroupId());
+//                String savedWebURL = adapter.getArticleWebURLTransaction(item.getGroupId());
+//                SavedArticles savedArticle = new SavedArticles(savedTitle, savedImageURL, savedWebURL);
+//                dbHandler.addArticle(savedArticle);
+//                dbHandler.databaseToObject();
+
+                //add to internal Storage
+
+//                String urlImage= adapter.getItemImagUrlTransaction(item.getGroupId());
+//                Picasso.get()
+//                        .load(urlImage);
+//                BitmapDrawable drawable=(BitmapDrawable)
+//                        .into(holder.article_image);
+
+
+                // TODO: 08.06.2019 сделать добавление в базу
+
+                Log.d(TAG, "pressed add to favorites article with title: " + item.getTitle().toString());
+                return true;
+            case 122:
+                Log.d(TAG, "pressed remove from favorites in Emailed tab");
+                // TODO: 08.06.2019 сделать удаление
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+
+    }
+
 
     public void getImage(@NonNull Response<EmailedNews> response) {
         Picasso.get()

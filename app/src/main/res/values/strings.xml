@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">News</string>
-    <string name="tab_text_0">search</string>
     <string name="tab_text_1">most emailed</string>
     <string name="tab_text_2">most shared</string>
     <string name="tab_text_3">most viewed</string>
-    <string name="pref_file">com.example.android.preference_file</string>
-    <string name="pref_search_query">com.example.android.preference_search_query</string>
+    <string name="tab_text_4">saved</string>
 </resources>

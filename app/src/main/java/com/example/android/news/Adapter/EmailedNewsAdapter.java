@@ -3,14 +3,18 @@ package com.example.android.news.Adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.android.news.Interface.ItemClickListener;
+import com.example.android.news.Model.Emailed.EmailedNews;
 import com.example.android.news.Model.Emailed.EmailedResults;
+import com.example.android.news.Model.Shared.SharedResult;
 import com.example.android.news.R;
 import com.example.android.news.Remote.DetailArticle;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
@@ -21,17 +25,20 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-class EmailedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+class EmailedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnCreateContextMenuListener {
     private ItemClickListener itemClickListener;
-    TextView article_title;
-    RelativeTimeTextView article_time;
-    CircleImageView article_image;
+    TextView article_title_emailed;
+    RelativeTimeTextView article_time_emailed;
+    CircleImageView article_image_emailed;
+    CardView cardViewEmailed;
 
     EmailedNewsViewHolder(View itemView) {
         super(itemView);
-        article_image = (CircleImageView) itemView.findViewById(R.id.article_image_emailed);
-        article_title = (TextView) itemView.findViewById(R.id.article_title_emailed);
-        article_time = (RelativeTimeTextView) itemView.findViewById(R.id.article_time_emailed);
+        article_image_emailed = (CircleImageView) itemView.findViewById(R.id.article_image_emailed);
+        article_title_emailed = (TextView) itemView.findViewById(R.id.article_title_emailed);
+        article_time_emailed = (RelativeTimeTextView) itemView.findViewById(R.id.article_time_emailed);
+        cardViewEmailed=(CardView)itemView.findViewById(R.id.cardViewEmailed);
+        cardViewEmailed.setOnCreateContextMenuListener(this);
 
         itemView.setOnClickListener(this);
     }
@@ -44,10 +51,15 @@ class EmailedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     public void onClick(View view) {
         itemClickListener.onClick(view, getAdapterPosition(), false);
     }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+        contextMenu.setHeaderTitle("add article to favorites");
+        contextMenu.add(this.getAdapterPosition(),121,0,"save");
+    }
 }
 
-public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHolder> {
-
+public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHolder>  {
     private List<EmailedResults> articleList;
     private Context context;
 
@@ -72,13 +84,13 @@ public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHold
                         .get(position).getMedia()
                         .get(0).getMediaMetadata()
                         .get(2).getUrl())
-                .into(holder.article_image);
+                .into(holder.article_image_emailed);
 
 
-        holder.article_title.setText(articleList.get(position).getTitle());
+        holder.article_title_emailed.setText(articleList.get(position).getTitle());
 
         String date = articleList.get(position).getPublishedDate();
-        holder.article_time.setText(date);
+        holder.article_time_emailed.setText(date);
 
         //set event click
         holder.setItemClickListener(new ItemClickListener() {

@@ -1,7 +1,5 @@
 package com.example.android.news;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,14 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import com.example.android.news.Remote.EmailedTab;
-import com.example.android.news.Remote.SearchTab;
+import com.example.android.news.Remote.SavedTab;
 import com.example.android.news.Remote.SharedTab;
 import com.example.android.news.Remote.ViewedTab;
 
@@ -64,17 +57,17 @@ public class MainActivity extends AppCompatActivity {
             switch (position) {
                 //responsible for the location of the functional tabs
                 case 0:
-                    SearchTab searchTab = new SearchTab();
-                    return searchTab;
-                case 1:
                     EmailedTab emailedTab = new EmailedTab();
                     return emailedTab;
-                case 2:
+                case 1:
                     SharedTab sharedTab = new SharedTab();
                     return sharedTab;
-                case 3:
+                case 2:
                     ViewedTab viewedTab = new ViewedTab();
                     return viewedTab;
+                case 3:
+                    SavedTab savedTab = new SavedTab();
+                    return savedTab;
                 default:
                     return null;
             }
