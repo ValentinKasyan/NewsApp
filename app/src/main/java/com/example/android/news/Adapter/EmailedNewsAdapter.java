@@ -122,6 +122,7 @@ public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHold
                 .get(2).getUrl();
     }
 
+    // TODO: 11.06.2019  проверить нужно ли  
     public void saveImageToExternalStorage(EmailedNewsViewHolder holder, int position) {
         FileOutputStream outputStream = null;
         BitmapDrawable drawable = (BitmapDrawable) holder.article_image_emailed.getDrawable();

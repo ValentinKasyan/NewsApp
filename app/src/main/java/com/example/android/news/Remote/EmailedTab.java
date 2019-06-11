@@ -186,7 +186,8 @@ public class EmailedTab extends Fragment {
                 SavedArticles savedArticle = new SavedArticles(savedTitle);
                 dbHandler.addArticle(savedArticle);
                 dbHandler.databaseToObject();
-                Picasso.get().load(adapter.getItemImageUrlTransaction(item.getGroupId())).into(picassoImageTarget(getContext(),"my_image."+"jpeg"));
+                String urlImg=adapter.getItemImageUrlTransaction(item.getGroupId());
+                Picasso.get().load(urlImg).into(picassoImageTarget(getContext(),"imageDir"));
 
 //                Picasso.with(this).load(anImageUrl).into(picassoImageTarget(getApplicationContext(), "imageDir", "my_image.jpeg"));
 
@@ -227,16 +228,17 @@ public class EmailedTab extends Fragment {
                 .show();
 
     }
-    private Target picassoImageTarget(Context context, final String imageName) {
+    private Target picassoImageTarget(Context context, final String imageDir) {
         Log.d("picassoImageTarget", " picassoImageTarget");
         ContextWrapper cw = new ContextWrapper(context);
-        final File directory = cw.getDir("/News/", Context.MODE_PRIVATE); // path to /data/data/yourapp/app_imageDir
+        final File directory = cw.getDir(imageDir, Context.MODE_PRIVATE); // path to /data/data/yourapp/app_imageDir
         return new Target() {
             @Override
             public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        String imageName=String.valueOf(System.currentTimeMillis())+".jpeg";
                         final File myImageFile = new File(directory, imageName); // Create image file
                         FileOutputStream fos = null;
                         try {
@@ -261,6 +263,7 @@ public class EmailedTab extends Fragment {
             public void onBitmapFailed(Exception e, Drawable errorDrawable) {
 
             }
+
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
