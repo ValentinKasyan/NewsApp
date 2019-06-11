@@ -1,10 +1,12 @@
 package com.example.android.news.Remote;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -27,7 +29,11 @@ import com.example.android.news.Model.Emailed.EmailedNews;
 import com.example.android.news.Model.Emailed.EmailedResults;
 import com.example.android.news.R;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
@@ -44,7 +50,6 @@ public class EmailedTab extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = " EmailedTab";
     String webHotURL = "";
-
     EmailedNewsAdapter adapter;
     RecyclerView lstNews;
     RecyclerView.LayoutManager layoutManager;
@@ -86,7 +91,6 @@ public class EmailedTab extends Fragment {
             }
         });
         return rootView;
-
     }
 
     public void loadNewsEmailed(boolean isRefreshed) {
@@ -130,7 +134,6 @@ public class EmailedTab extends Fragment {
 
         } else// If from Swipe to Refresh
         {
-
             dialog.show();
             //fetch new data
             mService.getEmailedArticles().enqueue(new Callback<EmailedNews>() {
@@ -179,20 +182,21 @@ public class EmailedTab extends Fragment {
             case 121:
                 Log.d(TAG, "pressed add to favorites in Emailed tab");
                 // TODO: 10.06.2019 востановить
-//                String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
-//                String savedImageURL = adapter.getItemImagUrlTransaction(item.getGroupId());
-//                String savedWebURL = adapter.getArticleWebURLTransaction(item.getGroupId());
-//                SavedArticles savedArticle = new SavedArticles(savedTitle, savedImageURL, savedWebURL);
-//                dbHandler.addArticle(savedArticle);
-//                dbHandler.databaseToObject();
+                String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
+                SavedArticles savedArticle = new SavedArticles(savedTitle);
+                dbHandler.addArticle(savedArticle);
+                dbHandler.databaseToObject();
+                Picasso.get().load(adapter.getItemImageUrlTransaction(item.getGroupId())).into(picassoImageTarget(getContext(),"my_image."+"jpeg"));
+
+//                Picasso.with(this).load(anImageUrl).into(picassoImageTarget(getApplicationContext(), "imageDir", "my_image.jpeg"));
+
+//                EmailedNewsAdapter adapter = new EmailedNewsAdapter.new EmailedNewsViewHolder();
+//                adapter.saveImageToExternalStorage(adapter,item.getGroupId());
 
                 //add to internal Storage
-
-//                String urlImage= adapter.getItemImagUrlTransaction(item.getGroupId());
-//                Picasso.get()
-//                        .load(urlImage);
-//                BitmapDrawable drawable=(BitmapDrawable)
-//                        .into(holder.article_image);
+//                viewHolder = new EmailedNewsViewHolder(this.getView());
+//                adapter.saveImageToExternalStorage(viewHolder,item.getGroupId());
+//                String urlImage= adapter.getItemImageUrlTransaction(item.getGroupId());
 
 
                 // TODO: 08.06.2019 сделать добавление в базу
@@ -206,7 +210,6 @@ public class EmailedTab extends Fragment {
             default:
                 return super.onContextItemSelected(item);
         }
-
     }
 
 
@@ -224,4 +227,46 @@ public class EmailedTab extends Fragment {
                 .show();
 
     }
+    private Target picassoImageTarget(Context context, final String imageName) {
+        Log.d("picassoImageTarget", " picassoImageTarget");
+        ContextWrapper cw = new ContextWrapper(context);
+        final File directory = cw.getDir("/News/", Context.MODE_PRIVATE); // path to /data/data/yourapp/app_imageDir
+        return new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final File myImageFile = new File(directory, imageName); // Create image file
+                        FileOutputStream fos = null;
+                        try {
+                            fos = new FileOutputStream(myImageFile);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            try {
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.i("image", "image saved to >>>" + myImageFile.getAbsolutePath());
+
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                if (placeHolderDrawable != null) {}
+            }
+        };
+    }
+
 }

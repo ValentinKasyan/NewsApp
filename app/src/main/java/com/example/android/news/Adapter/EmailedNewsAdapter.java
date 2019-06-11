@@ -3,6 +3,9 @@ package com.example.android.news.Adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Environment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -10,34 +13,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.news.Interface.ItemClickListener;
-import com.example.android.news.Model.Emailed.EmailedNews;
 import com.example.android.news.Model.Emailed.EmailedResults;
-import com.example.android.news.Model.Shared.SharedResult;
 import com.example.android.news.R;
 import com.example.android.news.Remote.DetailArticle;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.squareup.picasso.Picasso;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
-class EmailedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnCreateContextMenuListener {
+class EmailedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
     private ItemClickListener itemClickListener;
     TextView article_title_emailed;
     RelativeTimeTextView article_time_emailed;
     CircleImageView article_image_emailed;
     CardView cardViewEmailed;
 
-    EmailedNewsViewHolder(View itemView) {
+    public EmailedNewsViewHolder(View itemView) {
         super(itemView);
         article_image_emailed = (CircleImageView) itemView.findViewById(R.id.article_image_emailed);
         article_title_emailed = (TextView) itemView.findViewById(R.id.article_title_emailed);
         article_time_emailed = (RelativeTimeTextView) itemView.findViewById(R.id.article_time_emailed);
-        cardViewEmailed=(CardView)itemView.findViewById(R.id.cardViewEmailed);
+        cardViewEmailed = (CardView) itemView.findViewById(R.id.cardViewEmailed);
         cardViewEmailed.setOnCreateContextMenuListener(this);
 
         itemView.setOnClickListener(this);
@@ -55,11 +58,12 @@ class EmailedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     @Override
     public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
         contextMenu.setHeaderTitle("add article to favorites");
-        contextMenu.add(this.getAdapterPosition(),121,0,"save");
+        contextMenu.add(this.getAdapterPosition(), 121, 0, "save");
+
     }
 }
 
-public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHolder>  {
+public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHolder> {
     private List<EmailedResults> articleList;
     private Context context;
 
@@ -67,7 +71,6 @@ public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHold
         this.articleList = articleList;
         this.context = context;
     }
-
 
     @Override
     public EmailedNewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -108,4 +111,42 @@ public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHold
     public int getItemCount() {
         return articleList.size();
     }
+
+    public String getItemTitleTransaction(int position) {
+        return articleList.get(position).getTitle();
+    }
+
+    public String getItemImageUrlTransaction(int position) {
+        return articleList.get(position).getMedia()
+                .get(0).getMediaMetadata()
+                .get(2).getUrl();
+    }
+
+    public void saveImageToExternalStorage(EmailedNewsViewHolder holder, int position) {
+        FileOutputStream outputStream = null;
+        BitmapDrawable drawable = (BitmapDrawable) holder.article_image_emailed.getDrawable();
+        Bitmap bitmap = drawable.getBitmap();
+        File filepath = Environment.getExternalStorageDirectory();
+        File dir = new File(filepath.getAbsolutePath() + "/News/");
+        dir.mkdir();
+        File file = new File(dir, System.currentTimeMillis() + ".jpg");
+        try {
+            outputStream = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        Toast.makeText(this.context, "Image save to external store ", Toast.LENGTH_LONG).show();
+        try {
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
