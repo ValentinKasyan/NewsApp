@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -48,11 +49,12 @@ public class EmailedTab extends Fragment {
     NewsService mService;
     TextView top_title;
     SwipeRefreshLayout swipeRefreshLayout;
-    private static final String TAG = " EmailedTab";
+    private static final String TAG = "DebuggingLogs";
     String webHotURL = "";
     EmailedNewsAdapter adapter;
     RecyclerView lstNews;
     RecyclerView.LayoutManager layoutManager;
+    String imagePath;
 
     DBHandler dbHandler;
 
@@ -79,7 +81,7 @@ public class EmailedTab extends Fragment {
         lstNews.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         lstNews.setLayoutManager(layoutManager);
-        dbHandler = new DBHandler(getContext(), null, null, 1);
+        dbHandler = new DBHandler(getContext(), null, null, 2);
         loadNewsEmailed(false);
 
         imageViewEmailed.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +107,7 @@ public class EmailedTab extends Fragment {
                                 EmailedResults results = response.body().getResults().get(0);
                                 //get first article
                                 if (results != null && results.getMedia().get(0).getMediaMetadata().get(2).getUrl() != null) {
-                                    Log.d(TAG, "response for getImage : " + "response = " + response + "; " + "response.body() = " + response.body());
+                                    Log.d(TAG, "EmailedTab: response for getImage : " + "response = " + response + "; " + "response.body() = " + response.body());
                                     getImage(response);
                                 }
                                 assert results != null;
@@ -121,13 +123,13 @@ public class EmailedTab extends Fragment {
                                 adapter = new EmailedNewsAdapter(removeFirstItem, getActivity().getBaseContext());
                                 lstNews.setAdapter(adapter);
                             } else {
-                                Log.d(TAG, "fail : " + "response = " + response + "; " + "response.body() = " + response.body());
+                                Log.d(TAG, "EmailedTab: fail : " + "response = " + response + "; " + "response.body() = " + response.body());
                             }
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<EmailedNews> call, @NonNull Throwable t) {
-                            Log.d(TAG, "fail" + t.getMessage());
+                            Log.d(TAG, "EmailedTab: fail" + t.getMessage());
                             showAlertDialog(t);
                         }
                     });
@@ -160,14 +162,14 @@ public class EmailedTab extends Fragment {
                         adapter = new EmailedNewsAdapter(removeFirstItem, getActivity().getBaseContext());
                         lstNews.setAdapter(adapter);
                     } else {
-                        Log.d(TAG, "fail : " + "response = " + response + "; " + "response.body() = " + response.body());
+                        Log.d(TAG, "EmailedTab: fail : " + "response = " + response + "; " + "response.body() = " + response.body());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<EmailedNews> call, Throwable t) {
                     showAlertDialog(t);
-                    Log.d(TAG, "fail" + t.getMessage());
+                    Log.d(TAG, "EmailedTab: fail" + t.getMessage());
                 }
             });
             //Dismiss refresh progressing
@@ -180,33 +182,28 @@ public class EmailedTab extends Fragment {
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 121:
-                Log.d(TAG, "pressed add to favorites in Emailed tab");
-                // TODO: 10.06.2019 востановить
+                Log.d(TAG, "EmailedTab: pressed add to favorites in Emailed tab");
+
                 String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
-                SavedArticles savedArticle = new SavedArticles(savedTitle);
-                dbHandler.addArticle(savedArticle);
-                dbHandler.databaseToObject();
                 String urlImg=adapter.getItemImageUrlTransaction(item.getGroupId());
                 Picasso.get().load(urlImg).into(picassoImageTarget(getContext(),"imageDir"));
+                if(imagePath==null){
+                    // TODO: 12.06.2019 заменить  
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-//                Picasso.with(this).load(anImageUrl).into(picassoImageTarget(getApplicationContext(), "imageDir", "my_image.jpeg"));
+                SavedArticles savedArticle = new SavedArticles(savedTitle,imagePath);
+                dbHandler.addArticle(savedArticle);
 
-//                EmailedNewsAdapter adapter = new EmailedNewsAdapter.new EmailedNewsViewHolder();
-//                adapter.saveImageToExternalStorage(adapter,item.getGroupId());
-
-                //add to internal Storage
-//                viewHolder = new EmailedNewsViewHolder(this.getView());
-//                adapter.saveImageToExternalStorage(viewHolder,item.getGroupId());
-//                String urlImage= adapter.getItemImageUrlTransaction(item.getGroupId());
-
-
-                // TODO: 08.06.2019 сделать добавление в базу
-
-                Log.d(TAG, "pressed add to favorites article with title: " + item.getTitle().toString());
+                Log.d(TAG, "EmailedTab: pressed add to favorites article with title: " + item.getTitle().toString());
                 return true;
             case 122:
-                Log.d(TAG, "pressed remove from favorites in Emailed tab");
-                // TODO: 08.06.2019 сделать удаление
+                Log.d(TAG, "EmailedTab: pressed remove from favorites in Emailed tab");
+
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -214,13 +211,13 @@ public class EmailedTab extends Fragment {
     }
 
 
-    public void getImage(@NonNull Response<EmailedNews> response) {
+    private void getImage(@NonNull Response<EmailedNews> response) {
         Picasso.get()
                 .load(response.body().getResults().get(0).getMedia().get(0).getMediaMetadata().get(2).getUrl())
                 .into(imageViewEmailed);
     }
 
-    public void showAlertDialog(Throwable throwable) {
+    private void showAlertDialog(Throwable throwable) {
         new AlertDialog.Builder(getContext())
                 .setTitle("Error")
                 .setMessage(throwable.getLocalizedMessage())
@@ -228,7 +225,7 @@ public class EmailedTab extends Fragment {
                 .show();
 
     }
-    private Target picassoImageTarget(Context context, final String imageDir) {
+     Target picassoImageTarget(Context context, final String imageDir) {
         Log.d("picassoImageTarget", " picassoImageTarget");
         ContextWrapper cw = new ContextWrapper(context);
         final File directory = cw.getDir(imageDir, Context.MODE_PRIVATE); // path to /data/data/yourapp/app_imageDir
@@ -239,6 +236,7 @@ public class EmailedTab extends Fragment {
                     @Override
                     public void run() {
                         String imageName=String.valueOf(System.currentTimeMillis())+".jpeg";
+                        imagePath=imageName;
                         final File myImageFile = new File(directory, imageName); // Create image file
                         FileOutputStream fos = null;
                         try {
@@ -253,10 +251,11 @@ public class EmailedTab extends Fragment {
                                 e.printStackTrace();
                             }
                         }
-                        Log.i("image", "image saved to >>>" + myImageFile.getAbsolutePath());
+                        Log.i("DebuggingLogs", "EmailedTab: image saved to >>>" + myImageFile.getAbsolutePath());
 
                     }
                 }).start();
+
             }
 
             @Override

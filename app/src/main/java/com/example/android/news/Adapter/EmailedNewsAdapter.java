@@ -122,32 +122,4 @@ public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHold
                 .get(2).getUrl();
     }
 
-    // TODO: 11.06.2019  проверить нужно ли  
-    public void saveImageToExternalStorage(EmailedNewsViewHolder holder, int position) {
-        FileOutputStream outputStream = null;
-        BitmapDrawable drawable = (BitmapDrawable) holder.article_image_emailed.getDrawable();
-        Bitmap bitmap = drawable.getBitmap();
-        File filepath = Environment.getExternalStorageDirectory();
-        File dir = new File(filepath.getAbsolutePath() + "/News/");
-        dir.mkdir();
-        File file = new File(dir, System.currentTimeMillis() + ".jpg");
-        try {
-            outputStream = new FileOutputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-        Toast.makeText(this.context, "Image save to external store ", Toast.LENGTH_LONG).show();
-        try {
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
