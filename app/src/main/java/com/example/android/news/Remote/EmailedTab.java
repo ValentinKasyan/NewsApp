@@ -187,6 +187,17 @@ public class EmailedTab extends Fragment {
                 String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
                 String urlImg = adapter.getItemImageUrlTransaction(item.getGroupId());
                 Picasso.get().load(urlImg).into(picassoImageTarget(getContext(), "imageDir"));
+                WebPageDownloader webPageDownloader = new WebPageDownloader();
+                String urlArticle = adapter.getItemArticleUrlTransaction(item.getGroupId());
+                try {
+
+                    webPageDownloader.execute(urlArticle);
+
+
+                    String webPag = webPageDownloader.getWebPage(urlArticle);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 //                while (imagePath == null) {
 //                    dialog.show();
