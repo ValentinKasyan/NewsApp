@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -83,6 +82,7 @@ public class EmailedTab extends Fragment {
         lstNews.setLayoutManager(layoutManager);
         dbHandler = new DBHandler(getContext(), null, null, 2);
         loadNewsEmailed(false);
+        // Create the event notifier and pass ourself to it.
 
         imageViewEmailed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,25 +185,34 @@ public class EmailedTab extends Fragment {
                 Log.d(TAG, "EmailedTab: pressed add to favorites in Emailed tab");
 
                 String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
-                String urlImg=adapter.getItemImageUrlTransaction(item.getGroupId());
-                Picasso.get().load(urlImg).into(picassoImageTarget(getContext(),"imageDir"));
-                if(imagePath==null){
-                    // TODO: 12.06.2019 заменить  
+                String urlImg = adapter.getItemImageUrlTransaction(item.getGroupId());
+                Picasso.get().load(urlImg).into(picassoImageTarget(getContext(), "imageDir"));
+
+//                while (imagePath == null) {
+//                    dialog.show();
+//                }
+
+                if (imagePath == null) {
+
+                    // TODO: 12.06.2019 заменить
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                        Log.d(TAG, "EmailedTab: fail" + e.getMessage());
                     }
                 }
+//                try {
+////                    getHtml(adapter.getItemArticleUrlTransaction(item.getGroupId()));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                    Log.d(TAG, "EmailedTab: fail" + e.getMessage());
+//                }
 
-                SavedArticles savedArticle = new SavedArticles(savedTitle,imagePath);
+                SavedArticles savedArticle = new SavedArticles(savedTitle, imagePath);
                 dbHandler.addArticle(savedArticle);
 
                 Log.d(TAG, "EmailedTab: pressed add to favorites article with title: " + item.getTitle().toString());
-                return true;
-            case 122:
-                Log.d(TAG, "EmailedTab: pressed remove from favorites in Emailed tab");
-
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -225,7 +234,8 @@ public class EmailedTab extends Fragment {
                 .show();
 
     }
-     Target picassoImageTarget(Context context, final String imageDir) {
+
+    Target picassoImageTarget(Context context, final String imageDir) {
         Log.d("picassoImageTarget", " picassoImageTarget");
         ContextWrapper cw = new ContextWrapper(context);
         final File directory = cw.getDir(imageDir, Context.MODE_PRIVATE); // path to /data/data/yourapp/app_imageDir
@@ -235,8 +245,8 @@ public class EmailedTab extends Fragment {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        String imageName=String.valueOf(System.currentTimeMillis())+".jpeg";
-                        imagePath=imageName;
+                        String imageName = String.valueOf(System.currentTimeMillis()) + ".jpeg";
+                        imagePath = imageName;
                         final File myImageFile = new File(directory, imageName); // Create image file
                         FileOutputStream fos = null;
                         try {
@@ -244,11 +254,13 @@ public class EmailedTab extends Fragment {
                             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
                         } catch (IOException e) {
                             e.printStackTrace();
+                            Log.d(TAG, "EmailedTab: fail" + e.getMessage());
                         } finally {
                             try {
                                 fos.close();
                             } catch (IOException e) {
                                 e.printStackTrace();
+                                Log.d(TAG, "EmailedTab: fail" + e.getMessage());
                             }
                         }
                         Log.i("DebuggingLogs", "EmailedTab: image saved to >>>" + myImageFile.getAbsolutePath());
@@ -266,7 +278,9 @@ public class EmailedTab extends Fragment {
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
-                if (placeHolderDrawable != null) {}
+                if (placeHolderDrawable != null) {
+
+                }
             }
         };
     }

@@ -121,5 +121,8 @@ public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHold
                 .get(0).getMediaMetadata()
                 .get(2).getUrl();
     }
+    public String getItemArticleUrlTransaction(int position){
+        return  articleList.get(position).getUrl();
+    }
 
 }
