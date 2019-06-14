@@ -5,6 +5,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -34,6 +35,10 @@ import com.squareup.picasso.Target;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
@@ -50,6 +55,7 @@ public class EmailedTab extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = "DebuggingLogs";
     String webHotURL = "";
+    String webPageContent ;
     EmailedNewsAdapter adapter;
     RecyclerView lstNews;
     RecyclerView.LayoutManager layoutManager;
@@ -193,19 +199,12 @@ public class EmailedTab extends Fragment {
 
                     webPageDownloader.execute(urlArticle);
 
-
-                    String webPag = webPageDownloader.getWebPage(urlArticle);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                if (imagePath == null || webPageContent==null) {
 
-//                while (imagePath == null) {
-//                    dialog.show();
-//                }
-
-                if (imagePath == null) {
-
-                    // TODO: 12.06.2019 заменить
+                    // TODO: 12.06.2019 заменить,переделать
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -213,13 +212,6 @@ public class EmailedTab extends Fragment {
                         Log.d(TAG, "EmailedTab: fail" + e.getMessage());
                     }
                 }
-//                try {
-////                    getHtml(adapter.getItemArticleUrlTransaction(item.getGroupId()));
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    Log.d(TAG, "EmailedTab: fail" + e.getMessage());
-//                }
-
                 SavedArticles savedArticle = new SavedArticles(savedTitle, imagePath);
                 dbHandler.addArticle(savedArticle);
 
@@ -294,6 +286,52 @@ public class EmailedTab extends Fragment {
                 }
             }
         };
+    }
+
+    public class WebPageDownloader extends AsyncTask<String, Void, String> {
+
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            StringBuffer webPageContentStringBuffer = new StringBuffer();
+            if (urls.length <= 0) {
+                return "Invalid URL";
+            }
+
+            try {
+                String url = urls[0];
+                URL webUrl = new URL(url);
+                InputStream webPageDataStream = webUrl.openStream();
+                InputStreamReader webPageDataReader = new InputStreamReader(webPageDataStream);
+                int maxBytesToRead = 1024;
+                char[] buffer = new char[maxBytesToRead];
+                int bytesRead = webPageDataReader.read(buffer);
+
+                while (bytesRead != -1) {
+                    webPageContentStringBuffer.append(buffer, 0, bytesRead);
+                    bytesRead = webPageDataReader.read(buffer);
+                }
+
+                return webPageContentStringBuffer.toString();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return "Failed to get webpage content";
+        }
+
+        @Override
+        protected void onPostExecute(String webContent) {
+            super.onPostExecute(webContent);
+            setWebPageContent(webContent);
+        }
+    }
+
+    void setWebPageContent(String webPageContent) {
+        this.webPageContent = webPageContent;
     }
 
 }
