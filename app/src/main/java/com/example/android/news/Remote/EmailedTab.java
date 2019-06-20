@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.android.news.Adapter.EmailedNewsAdapter;
 import com.example.android.news.Common.Common;
@@ -42,24 +41,25 @@ import java.net.URL;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class EmailedTab extends Fragment {
 
     ImageView imageViewEmailed;
     SpotsDialog dialog;
     NewsService mService;
-    TextView top_title;
     SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = "DebuggingLogs";
     String webHotURL = "";
-    String webPageContent ;
+    String webPageContent;
     EmailedNewsAdapter adapter;
     RecyclerView lstNews;
     RecyclerView.LayoutManager layoutManager;
     String imagePath;
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     DBHandler dbHandler;
 
@@ -80,15 +80,12 @@ public class EmailedTab extends Fragment {
         });
 
         imageViewEmailed = (ImageView) rootView.findViewById(R.id.top_image_emailed);
-        top_title = (TextView) rootView.findViewById(R.id.top_title);
-
         lstNews = (RecyclerView) rootView.findViewById(R.id.lstNewsEmailed);
         lstNews.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         lstNews.setLayoutManager(layoutManager);
         dbHandler = new DBHandler(getContext(), null, null, 2);
         loadNewsEmailed(false);
-        // Create the event notifier and pass ourself to it.
 
         imageViewEmailed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,86 +98,64 @@ public class EmailedTab extends Fragment {
         return rootView;
     }
 
-    public void loadNewsEmailed(boolean isRefreshed) {
-        if (!isRefreshed) {
+    private void loadNewsEmailed(boolean isRefreshed) {
+        if(!isRefreshed){
             dialog.show();
-            mService.getEmailedArticles()
-                    .enqueue(new Callback<EmailedNews>() {
-                        @Override
-                        public void onResponse(@NonNull Call<EmailedNews> call, @NonNull Response<EmailedNews> response) {
-                            if (response.body() != null && response.body().getResults() != null) {
-                                dialog.dismiss();
-                                EmailedResults results = response.body().getResults().get(0);
-                                //get first article
-                                if (results != null && results.getMedia().get(0).getMediaMetadata().get(2).getUrl() != null) {
-                                    Log.d(TAG, "EmailedTab: response for getImage : " + "response = " + response + "; " + "response.body() = " + response.body());
-                                    getImage(response);
-                                }
-                                assert results != null;
-                                if (results.getTitle() != null && results.getMedia().get(0).getCopyright() != null && results.getUrl() != null) {
-                                    top_title.setText(results.getTitle());
-                                    webHotURL = results.getUrl();
-                                }
-                                //Load remain articles
-                                List<EmailedResults> removeFirstItem = response.body().getResults();
-                                //Because we already load first item to show on Diagonal Layout
-                                // So we need remove it
-                                removeFirstItem.remove(0);
-                                adapter = new EmailedNewsAdapter(removeFirstItem, getActivity().getBaseContext());
-                                lstNews.setAdapter(adapter);
-                            } else {
-                                Log.d(TAG, "EmailedTab: fail : " + "response = " + response + "; " + "response.body() = " + response.body());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<EmailedNews> call, @NonNull Throwable t) {
-                            Log.d(TAG, "EmailedTab: fail" + t.getMessage());
-                            showAlertDialog(t);
-                        }
-                    });
-
-        } else// If from Swipe to Refresh
+        compositeDisposable.add(mService.getEmailedArticles()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<EmailedNews>() {
+                    @Override
+                    public void accept(EmailedNews emailedNews) throws Exception {
+                        displayData(emailedNews);
+                        dialog.dismiss();
+                    }
+                }));
+        }else// If from Swipe to Refresh
         {
             dialog.show();
             //fetch new data
-            mService.getEmailedArticles().enqueue(new Callback<EmailedNews>() {
-                @Override
-                public void onResponse(@NonNull Call<EmailedNews> call, @NonNull Response<EmailedNews> response) {
-                    if (response.body() != null && response.body().getResults() != null) {
-                        dialog.dismiss();
-                        EmailedResults results = response.body().getResults().get(0);
-                        //get first article
-                        if (results != null && results.getMedia().get(0).getMediaMetadata().get(2).getUrl() != null) {
-                            getImage(response);
+            compositeDisposable.add(mService.getEmailedArticles()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<EmailedNews>() {
+                        @Override
+                        public void accept(EmailedNews emailedNews) throws Exception {
+                            displayData(emailedNews);
+                            dialog.dismiss();
                         }
-                        assert results != null;
-                        if (results.getTitle() != null && results.getMedia().get(0).getCopyright() != null && results.getUrl() != null) {
-                            top_title.setText(results.getTitle());
-                            webHotURL = results.getUrl();
-                        }
-                        //Load remain articles
-                        List<EmailedResults> removeFirstItem = response.body().getResults();
-
-                        //Because we already load first item to show on Diagonal Layout
-                        // So we need remove it
-                        removeFirstItem.remove(0);
-                        adapter = new EmailedNewsAdapter(removeFirstItem, getActivity().getBaseContext());
-                        lstNews.setAdapter(adapter);
-                    } else {
-                        Log.d(TAG, "EmailedTab: fail : " + "response = " + response + "; " + "response.body() = " + response.body());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<EmailedNews> call, Throwable t) {
-                    showAlertDialog(t);
-                    Log.d(TAG, "EmailedTab: fail" + t.getMessage());
-                }
-            });
+                    }));
             //Dismiss refresh progressing
             swipeRefreshLayout.setRefreshing(false);
         }
+    }
+
+    private void displayData(EmailedNews emailedNews) {
+
+        if (emailedNews != null && emailedNews.getResults() != null) {
+            EmailedResults results = emailedNews.getResults().get(0);
+            //get first article
+            if (results != null && results.getMedia().get(0).getMediaMetadata().get(2).getUrl() != null) {
+                getImage(emailedNews);
+            }
+            assert results != null;
+            if (results.getMedia().get(0).getCopyright() != null && results.getUrl() != null) {
+                webHotURL = results.getUrl();
+            }
+
+        }
+        List<EmailedResults> removeFirstItem = null;
+        if (emailedNews != null) {
+            removeFirstItem = emailedNews.getResults();
+        }
+        adapter = new EmailedNewsAdapter(removeFirstItem, getActivity().getBaseContext());
+        lstNews.setAdapter(adapter);
+    }
+
+    @Override
+    public void onStop() {
+        compositeDisposable.clear();
+        super.onStop();
     }
 
     //Floating context menu
@@ -202,7 +177,7 @@ public class EmailedTab extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (imagePath == null || webPageContent==null) {
+                if (imagePath == null || webPageContent == null) {
 
                     // TODO: 12.06.2019 заменить,переделать
                     try {
@@ -222,10 +197,9 @@ public class EmailedTab extends Fragment {
         }
     }
 
-
-    private void getImage(@NonNull Response<EmailedNews> response) {
+    private void getImage(@NonNull EmailedNews emailedNews) {
         Picasso.get()
-                .load(response.body().getResults().get(0).getMedia().get(0).getMediaMetadata().get(2).getUrl())
+                .load(emailedNews.getResults().get(0).getMedia().get(0).getMediaMetadata().get(2).getUrl())
                 .into(imageViewEmailed);
     }
 
