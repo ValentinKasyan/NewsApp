@@ -130,6 +130,7 @@ public class EmailedTab extends Fragment {
         }
     }
 
+
     private void displayData(EmailedNews emailedNews) {
 
         if (emailedNews != null && emailedNews.getResults() != null) {

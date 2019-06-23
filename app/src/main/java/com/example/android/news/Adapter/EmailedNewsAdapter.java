@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.android.news.Download.DownloadRequestsSubscriber;
 import com.example.android.news.Interface.ItemClickListener;
 import com.example.android.news.Model.Emailed.EmailedResults;
 import com.example.android.news.R;
@@ -28,6 +29,7 @@ class EmailedNewsViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     RelativeTimeTextView article_time_emailed;
     CircleImageView article_image_emailed;
     CardView cardViewEmailed;
+
 
     public EmailedNewsViewHolder(View itemView) {
         super(itemView);
@@ -64,6 +66,7 @@ public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHold
     public EmailedNewsAdapter(List<EmailedResults> articleList, Context context) {
         this.articleList = articleList;
         this.context = context;
+
     }
 
     @Override
@@ -119,5 +122,7 @@ public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHold
     public String getItemArticleUrlTransaction(int position) {
         return articleList.get(position).getUrl();
     }
+
+
 
 }

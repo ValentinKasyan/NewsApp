@@ -1,6 +1,7 @@
 
 package com.example.android.news.Model.Emailed;
 
+import com.example.android.news.Download.DownloadingStatus;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -69,6 +70,13 @@ public class EmailedResults {
     @SerializedName("uri")
     @Expose
     private String uri;
+    // TODO: 23.06.2019 добавить Downloading status for tabs
+    //Downloading status i.e NOT_DOWNLOADED, IN_PROGRESS, WAITING or DOWNLOADED
+    private DownloadingStatus downloadingStatus;
+    // TODO: 23.06.2019 проверить itemDownloadPercent , lastEmittedDownloadPercent
+    private int itemDownloadPercent;
+
+    private long lastEmittedDownloadPercent = -1;
 
     public String getUrl() {
         return url;
@@ -230,4 +238,27 @@ public class EmailedResults {
         this.uri = uri;
     }
 
+    public DownloadingStatus getDownloadingStatus() {
+        return downloadingStatus;
+    }
+
+    public void setDownloadingStatus(DownloadingStatus downloadingStatus) {
+        this.downloadingStatus = downloadingStatus;
+    }
+
+    public int getItemDownloadPercent() {
+        return itemDownloadPercent;
+    }
+
+    public void setItemDownloadPercent(int itemDownloadPercent) {
+        this.itemDownloadPercent = itemDownloadPercent;
+    }
+
+    public long getLastEmittedDownloadPercent() {
+        return lastEmittedDownloadPercent;
+    }
+
+    public void setLastEmittedDownloadPercent(long lastEmittedDownloadPercent) {
+        this.lastEmittedDownloadPercent = lastEmittedDownloadPercent;
+    }
 }
