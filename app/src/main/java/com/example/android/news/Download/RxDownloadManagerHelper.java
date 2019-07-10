@@ -8,10 +8,12 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.example.android.news.Model.Emailed.EmailedResults;
+import com.example.android.news.Model.Shared.SharedResult;
 
 import io.reactivex.ObservableEmitter;
 
 public class RxDownloadManagerHelper {
+
     private final static int DOWNLOAD_QUERY_DELAY_PARAM = 200;
     private final static int DOWNLOAD_COMPLETE_PERCENT = 100;
     private final static int PERCENT_MULTIPLIER = 100;
@@ -44,9 +46,8 @@ public class RxDownloadManagerHelper {
      * @param downloadableItem
      * @param percentFlowableEmiitter
      */
-    // TODO: 23.06.2019   использовал только EmailedResults
     public static void queryDownloadPercents(final DownloadManager downloadManager,
-                                             final EmailedResults downloadableItem,
+                                             final SharedResult downloadableItem,
                                              final ObservableEmitter percentFlowableEmiitter) {
 
         //If the emitter has been disposed, then return.
@@ -57,7 +58,7 @@ public class RxDownloadManagerHelper {
 
         long lastEmittedDownloadPercent = downloadableItem.getLastEmittedDownloadPercent();
 
-// TODO: 23.06.2019   изменил на downloadableItem.getId()
+
         DownloadableResult downloadableResult = getDownloadResult(downloadManager, downloadableItem
                 .getId());
 
@@ -144,5 +145,4 @@ public class RxDownloadManagerHelper {
         }
         return downloadableResult;
     }
-
 }

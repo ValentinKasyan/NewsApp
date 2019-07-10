@@ -1,7 +1,9 @@
 package com.example.android.news.Download;
 
 
+import com.example.android.news.Interface.ItemDownloadCallback;
 import com.example.android.news.Model.Emailed.EmailedResults;
+import com.example.android.news.Model.Shared.SharedResult;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -34,8 +36,8 @@ public class DownloadRequestsSubscriber {
     public void requestSongs(int number) {
         downloadRequestsSubscription.request(number);
     }
-    // TODO: 23.06.2019   использовал только EmailedResults
-    public void emitNextItem(EmailedResults downloadableItem) {
+
+    public void emitNextItem(SharedResult downloadableItem) {
         downloadsFlowableEmitter.onNext(downloadableItem);
     }
 
@@ -49,11 +51,10 @@ public class DownloadRequestsSubscriber {
 
             @Override
             public void onNext(Object o) {
-                // TODO: 23.06.2019   использовал только EmailedResults
-                if (!(o instanceof EmailedResults)) {
+                if (!(o instanceof SharedResult)) {
                     return;
                 }
-                itemDownloadCallback.onDownloadStarted((EmailedResults) o);
+                itemDownloadCallback.onDownloadStarted((SharedResult)o);
             }
 
             @Override

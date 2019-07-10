@@ -1,7 +1,8 @@
 package com.example.android.news.Download;
 
 
-import com.example.android.news.Model.Emailed.EmailedResults;
+import com.example.android.news.Interface.ItemPercentCallback;
+import com.example.android.news.Model.Shared.SharedResult;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -15,7 +16,7 @@ public class ItemDownloadPercentObserver {
     private final ItemPercentCallback callback;
 
     public ItemDownloadPercentObserver(ItemPercentCallback callback) {
-        this.callback=callback;
+        this.callback = callback;
         ObservableOnSubscribe observableOnSubscribe = new ObservableOnSubscribe() {
             @Override
             public void subscribe(ObservableEmitter e) throws Exception {
@@ -42,12 +43,10 @@ public class ItemDownloadPercentObserver {
 
             @Override
             public void onNext(Object value) {
-                // TODO: 23.06.2019   использовал только EmailedResults
-                if (!(value instanceof EmailedResults)) {
+                if (!(value instanceof SharedResult)) {
                     return;
                 }
-                // TODO: 23.06.2019   использовал только EmailedResults
-                callback.updateDownloadableItem((EmailedResults) value);
+                callback.updateDownloadableItem((SharedResult) value);
             }
 
             @Override

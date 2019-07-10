@@ -18,7 +18,7 @@ public interface NewsService {
 
     // TODO: 18.06.2019 переделать остальные  
     @GET("https://api.nytimes.com/svc/mostpopular/v2/shared/1/facebook.json?api-key=" + Common.API_KEY)
-    Call<SharedNews> getSharedArticles();
+    Observable<SharedNews> getSharedArticles();
 
     @GET("https://api.nytimes.com/svc/mostpopular/v2/viewed/1.json?api-key=" + Common.API_KEY)
     Call<ViewedNews> getViewedArticles();

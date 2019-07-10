@@ -6,11 +6,13 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 
+import com.example.android.news.Model.Shared.SharedResult;
 import com.example.android.news.R;
 
 import java.util.ArrayList;
 
 public class DownloadItemHelper {
+
 //    public static ArrayList getItems(Context context) {
 //        ArrayList<DownloadableItem> downloadableItems = new ArrayList<>();
 //
@@ -44,17 +46,17 @@ public class DownloadItemHelper {
      * @param downloadableItem
      * @return
      */
-//    public static DownloadableItem getItem(Context context, DownloadableItem
-//            downloadableItem) {
-//        if (context == null || downloadableItem == null) {
-//            return downloadableItem;
-//        }
-//        String downloadingStatus = DownloadItemHelper.getDownloadStatus(context, downloadableItem.getId());
-//        int downloadPercent = DownloadItemHelper.getDownloadPercent(context, downloadableItem.getId());
-//        downloadableItem.setDownloadingStatus(DownloadingStatus.getValue(downloadingStatus));
-//        downloadableItem.setItemDownloadPercent(downloadPercent);
-//        return downloadableItem;
-//    }
+    public static SharedResult getItem(Context context, SharedResult
+            downloadableItem) {
+        if (context == null || downloadableItem == null) {
+            return downloadableItem;
+        }
+        String downloadingStatus = DownloadItemHelper.getDownloadStatus(context, downloadableItem.getPositionId());
+        int downloadPercent = DownloadItemHelper.getDownloadPercent(context, downloadableItem.getPositionId());
+        downloadableItem.setDownloadingStatus(DownloadingStatus.getValue(downloadingStatus));
+        downloadableItem.setItemDownloadPercent(downloadPercent);
+        return downloadableItem;
+    }
 
     public static String getDownloadStatus(Context context, String itemId) {
         SharedPreferences preferences =
@@ -64,13 +66,14 @@ public class DownloadItemHelper {
                 DownloadingStatus.NOT_DOWNLOADED.getDownloadStatus());
     }
 
-//    public static void persistItemState(Context context, DownloadableItem downloadableItem) {
-//        DownloadItemHelper.setDownloadPercent(context, downloadableItem.getId(),
-//                downloadableItem.getItemDownloadPercent());
-//        DownloadItemHelper.setDownloadStatus(context, downloadableItem.getId(),
-//                downloadableItem.getDownloadingStatus());
-//    }
+    public static void persistItemState(Context context, SharedResult downloadableItem) {
+        DownloadItemHelper.setDownloadPercent(context, downloadableItem.getPositionId(),
+                downloadableItem.getItemDownloadPercent());
+        DownloadItemHelper.setDownloadStatus(context, downloadableItem.getPositionId(),
+                downloadableItem.getDownloadingStatus());
+    }
 
+    // TODO: 10.07.2019 запись в SharedPreferences статусов
     public static void setDownloadStatus(Context context, String itemId, DownloadingStatus
             downloadingStatus) {
         SharedPreferences preferences =
