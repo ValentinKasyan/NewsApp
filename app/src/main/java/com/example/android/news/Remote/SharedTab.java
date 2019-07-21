@@ -3,6 +3,7 @@ package com.example.android.news.Remote;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import com.example.android.news.Adapter.SharedNewsAdapter;
 import com.example.android.news.Common.Common;
 import com.example.android.news.Database.DBHandler;
+import com.example.android.news.Download.SongDownloaderIconView;
 import com.example.android.news.Interface.NewsService;
 import com.example.android.news.Model.Shared.SharedNews;
 import com.example.android.news.Model.Shared.SharedResult;
@@ -36,6 +38,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
@@ -57,6 +60,7 @@ public class SharedTab extends Fragment {
     RecyclerView lstNews;
     RecyclerView.LayoutManager layoutManager;
     String imagePath;
+    private SongDownloaderIconView imageDownloadIcon;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     DBHandler dbHandler;
@@ -94,6 +98,8 @@ public class SharedTab extends Fragment {
             }
         });
         return rootView;
+
+
     }
 
     private void loadNewsShared(boolean isRefreshed) {
@@ -108,6 +114,7 @@ public class SharedTab extends Fragment {
                             displayData(sharedNews);
                             dialog.dismiss();
                         }
+
                     }));
         } else// If from Swipe to Refresh
         {
@@ -131,26 +138,53 @@ public class SharedTab extends Fragment {
 
     private void displayData(SharedNews sharedNews) {
 
-        if (sharedNews != null && sharedNews.getResults() != null) {
+        if (sharedNews == null && sharedNews.getResults() == null) {
+            Log.d(TAG, "fail : " + "sharedNews = " + sharedNews + "; " +
+                    "sharedNews.getResults() = " + sharedNews.getResults());
+            return;
+        } else {
             SharedResult results = sharedNews.getResults().get(0);
             //get first article
-            if (results != null && results.getMedia().get(0).getMediaMetadata().get(2).getUrl() != null) {
+            if (results == null && results.getMedia() == null &&
+                    results.getMedia().get(0).getMediaMetadata().get(2).getUrl() == null) {
+                Log.d(TAG, "fail : " + "sharedNews.getResults().get(0) = " +
+                        results + "; " + "results.getMedia() = " + results.getMedia() +
+                        "sharedNews.getResults().get(0).getMedia().get(0).getMediaMetadata().get(2).getUrl() = " +
+                        results.getMedia().get(0).getMediaMetadata().get(2).getUrl());
+                return;
+            } else {
                 getImage(sharedNews);
+                if (results.getUrl() == null) {
+                    Log.d(TAG, "fail : " + "results.getUrl()=" +
+                            results.getUrl() + "; ");
+                    return;
+                }
             }
-            assert results != null;
-            if (results.getMedia().get(0).getCopyright() != null && results.getUrl() != null) {
-                webHotURL = results.getUrl();
-            }
+        }
 
+//        for (int i=0;i<imagesId.length;i++){
+//
+//        }
+        List<SharedResult> downloadableItemList = null;
+        if (sharedNews == null) {
+            Log.d(TAG, "fail : " + "sharedNews = " + sharedNews + "; ");
+            return;
         }
-        List<SharedResult> removeFirstItem = null;
-        if (sharedNews != null) {
-            removeFirstItem = sharedNews.getResults();
+        downloadableItemList = sharedNews.getResults();
+        //for giving positionId count
+        Resources res = this.getResources();
+        int counter = 0;
+        String[] arrPositionId = res.getStringArray(R.array.position_ids);
+        for (SharedResult sharedResult : downloadableItemList) {
+            sharedResult.setPositionId(arrPositionId[counter]);
+            counter++;
         }
-        adapter = new SharedNewsAdapter(removeFirstItem, getActivity().getBaseContext());
+        //create adapter
+        adapter = new SharedNewsAdapter(getActivity().getBaseContext(), downloadableItemList, lstNews);
         lstNews.setAdapter(adapter);
     }
 
+    // TODO: 13.07.2019 rename removeFirstItem to downloadableItemList
     @Override
     public void onStop() {
         compositeDisposable.clear();
@@ -163,6 +197,11 @@ public class SharedTab extends Fragment {
 //        switch (item.getItemId()) {
 //            case 121:
 //                Log.d(TAG, "SharedTab: pressed add to favorites in Emailed tab");
+//                DownloadingStatus downloadingStatus = imageDownloadIcon.getDownloadingStatus();
+//                //Only when the icon is in not downloaded state, then do the following.
+//                if (downloadingStatus == DownloadingStatus.NOT_DOWNLOADED){
+//                    setI
+//                }
 //
 //                String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
 //                String urlImg = adapter.getItemImageUrlTransaction(item.getGroupId());
