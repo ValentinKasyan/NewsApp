@@ -3,49 +3,12 @@ package com.example.android.news.Download;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 
 import com.example.android.news.Model.Shared.SharedResult;
-import com.example.android.news.R;
-
-import java.util.ArrayList;
 
 public class DownloadItemHelper {
 
-//    public static ArrayList getItems(Context context) {
-//        ArrayList<DownloadableItem> downloadableItems = new ArrayList<>();
-//
-//        if (context == null) {
-//            return downloadableItems;
-//        }
-//
-//        Resources res = context.getResources();
-//        String[] imagesId = res.getStringArray(R.array.image_ids);
-//        String[] imagesDisplayNamesList = res.getStringArray(R.array.image_display_names_list);
-//        String[] imageDownloadUrlList = res.getStringArray(R.array.image_download_url_list);
-//        TypedArray imageDownloadCoverList = res.obtainTypedArray(R.array.image_download_cover_list);
-//
-//        for (int i = 0; i < imagesId.length; i++) {
-//            DownloadableItem downloadableItem = new DownloadableItem();
-//            String itemId = imagesId[i];
-//            downloadableItem.setId(itemId);
-//            String downloadingStatus = getDownloadStatus(context, itemId);
-//            downloadableItem.setDownloadingStatus(DownloadingStatus.getValue(downloadingStatus));
-//            downloadableItem.setItemTitle(imagesDisplayNamesList[i]);
-//            downloadableItem.setItemCoverId(imageDownloadCoverList.getResourceId(i, 0));
-//            downloadableItem.setItemDownloadUrl(imageDownloadUrlList[i]);
-//            downloadableItems.add(downloadableItem);
-//        }
-//        return downloadableItems;
-//    }
-
-    /**
-     * This method returns the downloadable Item with the latest percent and downloading status
-     * @param context
-     * @param downloadableItem
-     * @return
-     */
+    //    This method returns the downloadable Item with the latest percent and downloading status
     public static SharedResult getItem(Context context, SharedResult
             downloadableItem) {
         if (context == null || downloadableItem == null) {

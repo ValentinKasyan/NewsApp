@@ -15,6 +15,7 @@ import com.example.android.news.R;
 
 
 public class SongDownloaderIconView extends View {
+
     private final int CIRCLE_STROKE_WIDTH = 10;
     private final double ANGLE_MULTIPLER = 3.6;
     private final int TOTAL_ANGLE = 360;
@@ -51,30 +52,6 @@ public class SongDownloaderIconView extends View {
                 BitmapFactory.decodeResource(getResources(), R.drawable.icon_image_completed);
     }
 
-
-    @Override
-    public void onDraw(Canvas canvas) {
-
-        Matrix matrix = new Matrix();
-        DownloadItemHelper.setDownloadStatus(getContext(), itemId, downloadingStatus);
-
-        switch (downloadingStatus) {
-            case NOT_DOWNLOADED:
-                drawBitmapOnCanvas(canvas, matrix, mIconImageNotDownloaded);
-                break;
-            case DOWNLOADED:
-                drawBitmapOnCanvas(canvas, matrix, mIconImageCompleted);
-                break;
-            case IN_PROGRESS:
-                drawBitmapOnCanvas(canvas, matrix, mIconImageWaiting);
-                break;
-            case WAITING:
-                //same icon
-                drawBitmapOnCanvas(canvas, matrix, mIconImageWaiting);
-                break;
-        }
-    }
-
     public void updateDownloadingStatus(DownloadingStatus downloadingStatus) {
         this.downloadingStatus = downloadingStatus;
         invalidate();
@@ -99,6 +76,32 @@ public class SongDownloaderIconView extends View {
     public void updateProgress(Context context, int progress) {
         DownloadItemHelper.setDownloadPercent(context, itemId, progress);
         this.progress = progress;
+    }
+
+    @Override
+    public void onDraw(Canvas canvas) {
+
+        Matrix matrix = new Matrix();
+        DownloadItemHelper.setDownloadStatus(getContext(), itemId, downloadingStatus);
+
+        switch (downloadingStatus) {
+            case NOT_DOWNLOADED:
+                drawBitmapOnCanvas(canvas, matrix, mIconImageNotDownloaded);
+                break;
+            case DOWNLOADED:
+                drawBitmapOnCanvas(canvas, matrix, mIconImageCompleted);
+                break;
+            case IN_PROGRESS:
+                drawInProgressIconOnCanvas(canvas);
+                break;
+            case WAITING:
+                matrix.postRotate(rotateAngle++);
+                if (rotateAngle < TOTAL_ANGLE) {
+                    invalidate();
+                }
+                drawBitmapOnCanvas(canvas, matrix, mIconImageWaiting);
+                break;
+        }
     }
 
     private void drawInProgressIconOnCanvas(Canvas canvas) {
@@ -127,7 +130,7 @@ public class SongDownloaderIconView extends View {
         // Draw text within the arc.
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.BLACK);
-        mPaint.setTextSize(getResources().getDimension(R.dimen.image_name_text_size));
+        mPaint.setTextSize(getResources().getDimension(R.dimen.image_icon_progress_text_size));
         mPaint.setTextAlign(Paint.Align.CENTER);
         dX = (int) canvas.getWidth() / 2;
         dY = (int) ((canvas.getHeight() / 2) - ((mPaint.descent() + mPaint.ascent()) / 2));

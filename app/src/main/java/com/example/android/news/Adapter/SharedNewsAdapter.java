@@ -235,7 +235,7 @@ public class SharedNewsAdapter extends RecyclerView.Adapter<SharedNewsViewHolder
         if (downloadId == Constants.INVLALID_ID) {
             return;
         }
-//        downloadableItem.setDownloadId(downloadId);
+        downloadableItem.setDownloadId(downloadId);
         downloadableItem.setDownloadingStatus(DownloadingStatus.IN_PROGRESS);
         updateDownloadableItem(downloadableItem);
         RxDownloadManagerHelper.queryDownloadPercents(downloadManager, downloadableItem,

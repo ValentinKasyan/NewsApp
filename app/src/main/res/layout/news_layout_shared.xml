@@ -42,6 +42,12 @@
                 android:textStyle="italic" />
         </LinearLayout>
 
+        <com.example.android.news.Download.SongDownloaderIconView
+            android:id="@+id/icon_image_download"
+            android:layout_width="@dimen/icon_image_download_width"
+            android:layout_height="@dimen/icon_image_download_height"
+            android:src="@drawable/icon_image_not_downloaded" />
+
 
     </LinearLayout>
 

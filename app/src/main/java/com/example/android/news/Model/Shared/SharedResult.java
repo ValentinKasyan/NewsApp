@@ -67,6 +67,15 @@ public class SharedResult {
     @SerializedName("media")
     @Expose
     private List<SharedMedia> media = null;
+    private long downloadId;
+
+    public long getDownloadId() {
+        return downloadId;
+    }
+
+    public void setDownloadId(long downloadId) {
+        this.downloadId = downloadId;
+    }
 
     public String getPositionId() {
         return positionId;

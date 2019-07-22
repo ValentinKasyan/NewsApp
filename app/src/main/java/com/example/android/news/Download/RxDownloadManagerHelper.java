@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-import com.example.android.news.Model.Emailed.EmailedResults;
 import com.example.android.news.Model.Shared.SharedResult;
 
 import io.reactivex.ObservableEmitter;
@@ -20,32 +19,22 @@ public class RxDownloadManagerHelper {
     private final static int MIN_DOWNLOAD_PERCENT_DIFF = 3;
     private final static int INVALID_DOWNLOAD_ID = -1;
     private final static String TAG = RxDownloadManagerHelper.class.getSimpleName();
+    private static final String DEBUG = "DebuggingLogs";
 
-    /**
-     * @param downloadManager - Android's Download Manager.
-     * @param downloadUrl     - The url of the item to be downloaded.
-     * @return - the download id of the download.
-     */
     public static long enqueueDownload(DownloadManager downloadManager,
                                        String downloadUrl) {
         if (downloadManager == null || downloadUrl == null || downloadUrl.equals("")) {
             return INVALID_DOWNLOAD_ID;
         }
+        Log.d(DEBUG, "class RxDownloadManagerHelper - enqueueDownload() ");
         Uri uri = Uri.parse(downloadUrl);
         DownloadManager.Request request = new DownloadManager.Request(uri);
         return downloadManager.enqueue(request);
     }
 
-    /**
-     * TODO anshul.jain: Manage cases of failure.
-     * This method will be called upon every 'x' milliseconds to know the percentage of a download.
-     * This method will only emit the percent download, if the current percent download is 5%
-     * greater than the previous percent download.
-     *
-     * @param downloadManager
-     * @param downloadableItem
-     * @param percentFlowableEmiitter
-     */
+    //This method will be called upon every 'x' milliseconds to know the percentage of a download.
+    // This method will only emit the percent download, if the current percent download is 5%
+    // greater than the previous percent download.
     public static void queryDownloadPercents(final DownloadManager downloadManager,
                                              final SharedResult downloadableItem,
                                              final ObservableEmitter percentFlowableEmiitter) {
@@ -60,7 +49,7 @@ public class RxDownloadManagerHelper {
 
 
         DownloadableResult downloadableResult = getDownloadResult(downloadManager, downloadableItem
-                .getId());
+                .getDownloadId());
 
         if (downloadableResult == null) {
             return;
@@ -75,9 +64,9 @@ public class RxDownloadManagerHelper {
             percentFlowableEmiitter.onNext(downloadableItem);
             downloadableItem.setLastEmittedDownloadPercent(currentDownloadPercent);
         }
-        Log.d(TAG,
+        Log.d(DEBUG, "class RxDownloadManagerHelper - queryDownloadPercents()" +
                 " Querying the DB: DownloadStatus is " + downloadStatus + " and downloadPercent is " +
-                        "" + currentDownloadPercent);
+                "" + currentDownloadPercent);
         switch (downloadStatus) {
             case DownloadManager.STATUS_FAILED:
                 break;
@@ -102,14 +91,10 @@ public class RxDownloadManagerHelper {
         }
     }
 
-    /**
-     * @param downloadManager - Android's DownloadManager
-     * @param downloadId      - The downloadId for which the progress has to be fetched from the db.
-     * @return
-     */
+    // TODO: 22.07.2019 The downloadId for which the progress has to be fetched from the db 
     private static DownloadableResult getDownloadResult(DownloadManager downloadManager,
                                                         long downloadId) {
-
+        Log.d(DEBUG, "class RxDownloadManagerHelper - getDownloadResult() ");
         //Create a query with downloadId as the filter.
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(downloadId);

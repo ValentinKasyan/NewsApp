@@ -2,7 +2,6 @@ package com.example.android.news.Download;
 
 
 import com.example.android.news.Interface.ItemDownloadCallback;
-import com.example.android.news.Model.Emailed.EmailedResults;
 import com.example.android.news.Model.Shared.SharedResult;
 
 import org.reactivestreams.Subscriber;
@@ -54,7 +53,7 @@ public class DownloadRequestsSubscriber {
                 if (!(o instanceof SharedResult)) {
                     return;
                 }
-                itemDownloadCallback.onDownloadStarted((SharedResult)o);
+                itemDownloadCallback.onDownloadStarted((SharedResult) o);
             }
 
             @Override

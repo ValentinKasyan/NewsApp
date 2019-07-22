@@ -5,7 +5,6 @@ import com.example.android.news.Model.Emailed.EmailedNews;
 import com.example.android.news.Model.Shared.SharedNews;
 import com.example.android.news.Model.Viewed.ViewedNews;
 
-
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;

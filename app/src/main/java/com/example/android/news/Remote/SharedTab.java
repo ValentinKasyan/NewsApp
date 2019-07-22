@@ -38,7 +38,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
@@ -98,8 +97,6 @@ public class SharedTab extends Fragment {
             }
         });
         return rootView;
-
-
     }
 
     private void loadNewsShared(boolean isRefreshed) {
@@ -135,7 +132,6 @@ public class SharedTab extends Fragment {
         }
     }
 
-
     private void displayData(SharedNews sharedNews) {
 
         if (sharedNews == null && sharedNews.getResults() == null) {
@@ -161,10 +157,6 @@ public class SharedTab extends Fragment {
                 }
             }
         }
-
-//        for (int i=0;i<imagesId.length;i++){
-//
-//        }
         List<SharedResult> downloadableItemList = null;
         if (sharedNews == null) {
             Log.d(TAG, "fail : " + "sharedNews = " + sharedNews + "; ");
