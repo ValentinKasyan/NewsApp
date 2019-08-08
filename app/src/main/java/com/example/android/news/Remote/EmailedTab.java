@@ -1,13 +1,21 @@
 package com.example.android.news.Remote;
 
+import android.Manifest;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -18,13 +26,16 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.android.news.Adapter.EmailedNewsAdapter;
 import com.example.android.news.Common.Common;
 import com.example.android.news.Database.DBHandler;
 import com.example.android.news.Database.SavedArticles;
 import com.example.android.news.Interface.NewsService;
+import com.example.android.news.MainActivity;
 import com.example.android.news.Model.Emailed.EmailedNews;
 import com.example.android.news.Model.Emailed.EmailedResults;
 import com.example.android.news.R;
@@ -40,11 +51,37 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+
+import android.Manifest;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.webkit.MimeTypeMap;
+import android.widget.Button;
+import android.widget.Toast;
+
+import java.io.File;
+
+import static android.webkit.URLUtil.guessFileName;
+
 import dmax.dialog.SpotsDialog;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+
+import static android.content.Context.DOWNLOAD_SERVICE;
+import static android.webkit.URLUtil.guessFileName;
 
 public class EmailedTab extends Fragment {
 
@@ -60,6 +97,12 @@ public class EmailedTab extends Fragment {
     RecyclerView.LayoutManager layoutManager;
     String imagePath;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private long downloadID;
+    private String pathToFile,fileName;
+    private DownloadManager.Request request;
+    private static int REQUEST_CODE = 1;
+    // TODO: 08.08.2019 change
+    private String url = "https://www.nytimes.com/2019/07/16/opinion/trump-2020.html";
 
     DBHandler dbHandler;
 
@@ -85,6 +128,11 @@ public class EmailedTab extends Fragment {
         layoutManager = new LinearLayoutManager(getContext());
         lstNews.setLayoutManager(layoutManager);
         dbHandler = new DBHandler(getContext(), null, null, 2);
+        //add permission
+        ActivityCompat.requestPermissions(this.getActivity(), new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }, REQUEST_CODE);
+        getActivity().registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         loadNewsEmailed(false);
 
         imageViewEmailed.setOnClickListener(new View.OnClickListener() {
@@ -159,6 +207,12 @@ public class EmailedTab extends Fragment {
         super.onStop();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(onDownloadComplete);
+    }
+
     //Floating context menu
     @Override
     public boolean onContextItemSelected(MenuItem item) {
@@ -169,11 +223,12 @@ public class EmailedTab extends Fragment {
                 String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
                 String urlImg = adapter.getItemImageUrlTransaction(item.getGroupId());
                 Picasso.get().load(urlImg).into(picassoImageTarget(getContext(), "imageDir"));
-                WebPageDownloader webPageDownloader = new WebPageDownloader();
+                // TODO: 08.08.2019 download web page
                 String urlArticle = adapter.getItemArticleUrlTransaction(item.getGroupId());
                 try {
 
-                    webPageDownloader.execute(urlArticle);
+                   //
+                    // webPageDownloader.execute(urlArticle);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -262,52 +317,69 @@ public class EmailedTab extends Fragment {
             }
         };
     }
-    //tod
 
-    public class WebPageDownloader extends AsyncTask<String, Void, String> {
+    private void downloadFilesToPrivateDirectory() {
+        if (isDownloadManagerAvailable(getActivity().getBaseContext())) {
+            fileName = guessFileName(url, null, MimeTypeMap.getFileExtensionFromUrl(url));
+            File file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
 
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            StringBuffer webPageContentStringBuffer = new StringBuffer();
-            if (urls.length <= 0) {
-                return "Invalid URL";
-            }
-
-            try {
-                String url = urls[0];
-                URL webUrl = new URL(url);
-                InputStream webPageDataStream = webUrl.openStream();
-                InputStreamReader webPageDataReader = new InputStreamReader(webPageDataStream);
-                int maxBytesToRead = 1024;
-                char[] buffer = new char[maxBytesToRead];
-                int bytesRead = webPageDataReader.read(buffer);
-
-                while (bytesRead != -1) {
-                    webPageContentStringBuffer.append(buffer, 0, bytesRead);
-                    bytesRead = webPageDataReader.read(buffer);
+//            if (!file.mkdirs()) {
+//                Toast.makeText(MainActivity.this, "Directory not created ", Toast.LENGTH_LONG).show();
+//            }
+            if (isExternalStorageWritable()) {
+                //Create a DownloadManager.Request with all the information necessary to start the download
+                DownloadManager.Request request = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    request = new DownloadManager.Request(Uri.parse(url))
+                            .setTitle(fileName)//Title of the downloading notification
+                            .setDescription("Downloading")//description of the downloading notification
+                            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)//visibility downloading notification(VISIBILITY_VISIBLE)
+                            .setDestinationUri(Uri.fromFile(file))//By default, downloads are saved to a generated filename in the shared download cache and may be deleted by the system at any time to reclaim space.
+                            .setRequiresCharging(false)// Set if charging is required to begin the download(Установите, если для начала загрузки требуется зарядка)
+                            .setAllowedOverMetered(true)// Set if download is allowed on Mobile network
+                            .setAllowedOverRoaming(true)
+                            .setVisibleInDownloadsUi(true);
                 }
 
-                return webPageContentStringBuffer.toString();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+
+                pathToFile = file.getAbsolutePath().toString();
+
+                DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(DOWNLOAD_SERVICE);
+                downloadID = downloadManager.enqueue(request);// enqueue puts the download request in the queue.
+
             }
-
-            return "Failed to get webpage content";
-        }
-
-        @Override
-        protected void onPostExecute(String webContent) {
-            super.onPostExecute(webContent);
-            setWebPageContent(webContent);
         }
     }
 
-    void setWebPageContent(String webPageContent) {
-        this.webPageContent = webPageContent;
+    private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+//            Fetching the download id received with the broadcast
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            //Checking if the received broadcast is for our enqueued download by matching download id
+            if (downloadID == id) {
+                Toast.makeText(getActivity().getBaseContext(), "Download Completed " + fileName.toString(), Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+
+    public boolean isDownloadManagerAvailable(Context context) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            return true;
+        }
+        Toast.makeText(getActivity().getBaseContext(), "DownloadManager is not available  on your devise ", Toast.LENGTH_LONG).show();
+        return false;
+    }
+
+     // Checks if external storage is available for read and write
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
     }
 
 }
