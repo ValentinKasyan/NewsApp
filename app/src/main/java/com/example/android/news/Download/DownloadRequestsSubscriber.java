@@ -29,7 +29,10 @@ public class DownloadRequestsSubscriber {
 
         final Flowable flowable = Flowable.create(flowableOnSubscribe, BackpressureStrategy.BUFFER);
         final Subscriber subscriber = getSubscriber();
+        // TODO: 28.07.2019 изменил
         flowable.subscribeWith(subscriber);
+
+
     }
 
     public void requestSongs(int number) {

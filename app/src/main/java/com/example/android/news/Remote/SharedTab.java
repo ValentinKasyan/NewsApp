@@ -1,5 +1,6 @@
 package com.example.android.news.Remote;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -63,6 +65,7 @@ public class SharedTab extends Fragment {
     CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     DBHandler dbHandler;
+    private static int REQUEST_CODE = 1;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -87,6 +90,12 @@ public class SharedTab extends Fragment {
         lstNews.setLayoutManager(layoutManager);
         dbHandler = new DBHandler(getContext(), null, null, 2);
         loadNewsShared(false);
+
+        // TODO: 06.08.2019 add permissions() and registerReceiver- delete this
+        ActivityCompat.requestPermissions(this.getActivity(), new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }, REQUEST_CODE);
+
 
         imageViewShared.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,6 +191,7 @@ public class SharedTab extends Fragment {
         compositeDisposable.clear();
         super.onStop();
     }
+
 
 //    //Floating context menu
 //    @Override

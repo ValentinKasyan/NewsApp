@@ -70,10 +70,9 @@ public class EmailedResults {
     @SerializedName("uri")
     @Expose
     private String uri;
-    // TODO: 23.06.2019 добавить Downloading status for tabs
-    //Downloading status i.e NOT_DOWNLOADED, IN_PROGRESS, WAITING or DOWNLOADED
+
     private DownloadingStatus downloadingStatus;
-    // TODO: 23.06.2019 проверить itemDownloadPercent , lastEmittedDownloadPercent
+
     private int itemDownloadPercent;
 
     private long lastEmittedDownloadPercent = -1;

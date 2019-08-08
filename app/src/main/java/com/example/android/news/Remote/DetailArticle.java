@@ -34,6 +34,7 @@ public class DetailArticle extends AppCompatActivity {
         if (getIntent() != null) {
             if (!getIntent().getStringExtra("webURL").isEmpty())
                 webView.loadUrl(getIntent().getStringExtra("webURL"));
+
         }
     }
 }

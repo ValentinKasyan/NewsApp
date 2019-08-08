@@ -12,5 +12,4 @@ public class Common {
         return RetrofitClient.getClient(BASE_URL).create(NewsService.class);
     }
 
-
 }

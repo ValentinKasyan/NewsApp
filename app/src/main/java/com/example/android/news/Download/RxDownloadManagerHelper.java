@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.example.android.news.Model.Shared.SharedResult;
 
+import java.io.File;
+
 import io.reactivex.ObservableEmitter;
 
 public class RxDownloadManagerHelper {
@@ -18,8 +20,9 @@ public class RxDownloadManagerHelper {
     private final static int PERCENT_MULTIPLIER = 100;
     private final static int MIN_DOWNLOAD_PERCENT_DIFF = 3;
     private final static int INVALID_DOWNLOAD_ID = -1;
-    private final static String TAG = RxDownloadManagerHelper.class.getSimpleName();
     private static final String DEBUG = "DebuggingLogs";
+    private DownloadManager.Request request;
+
 
     public static long enqueueDownload(DownloadManager downloadManager,
                                        String downloadUrl) {
@@ -46,7 +49,6 @@ public class RxDownloadManagerHelper {
         }
 
         long lastEmittedDownloadPercent = downloadableItem.getLastEmittedDownloadPercent();
-
 
         DownloadableResult downloadableResult = getDownloadResult(downloadManager, downloadableItem
                 .getDownloadId());
@@ -91,9 +93,9 @@ public class RxDownloadManagerHelper {
         }
     }
 
-    // TODO: 22.07.2019 The downloadId for which the progress has to be fetched from the db 
     private static DownloadableResult getDownloadResult(DownloadManager downloadManager,
                                                         long downloadId) {
+
         Log.d(DEBUG, "class RxDownloadManagerHelper - getDownloadResult() ");
         //Create a query with downloadId as the filter.
         DownloadManager.Query query = new DownloadManager.Query();
@@ -119,8 +121,19 @@ public class RxDownloadManagerHelper {
             }
             //Get the download status
             int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+
             int downloadStatus = cursor.getInt(columnIndex);
             downloadableResult.setDownloadStatus(downloadStatus);
+            // TODO: 08.08.2019  try to get pass of downloaded html file and then save this pass to db,  content://downloads/all_downloads/1407
+            String downloadFilepath = null;
+            String downloadFileLocalUri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+            if (downloadFileLocalUri != null) {
+                File mfile = new File(Uri.parse(downloadFileLocalUri).getPath());
+                downloadFilepath = mfile.getAbsolutePath();
+            }
+            downloadableResult.setPathToFile(downloadFileLocalUri);
+            Log.d(DEBUG, "class RxDownloadManagerHelper : downloadFileLocalUri - " + downloadFileLocalUri + " ; " + "downloadFilepath - " + downloadFilepath);
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -128,6 +141,9 @@ public class RxDownloadManagerHelper {
                 cursor.close();
             }
         }
+
         return downloadableResult;
     }
+
+
 }
