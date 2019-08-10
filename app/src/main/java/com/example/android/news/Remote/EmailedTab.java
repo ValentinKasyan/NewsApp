@@ -101,8 +101,6 @@ public class EmailedTab extends Fragment {
     private String pathToFile,fileName;
     private DownloadManager.Request request;
     private static int REQUEST_CODE = 1;
-    // TODO: 08.08.2019 change
-    private String url = "https://www.nytimes.com/2019/07/16/opinion/trump-2020.html";
 
     DBHandler dbHandler;
 
@@ -219,20 +217,13 @@ public class EmailedTab extends Fragment {
         switch (item.getItemId()) {
             case 121:
                 Log.d(TAG, "EmailedTab: pressed add to favorites in Emailed tab");
-
                 String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
-                String urlImg = adapter.getItemImageUrlTransaction(item.getGroupId());
-                Picasso.get().load(urlImg).into(picassoImageTarget(getContext(), "imageDir"));
-                // TODO: 08.08.2019 download web page
-                String urlArticle = adapter.getItemArticleUrlTransaction(item.getGroupId());
-                try {
+                String savedImgUrl = adapter.getItemImageUrlTransaction(item.getGroupId());
+                String savedWebPageUrlForDownloading=adapter.getItemArticleUrlTransaction(item.getGroupId());
 
-                   //
-                    // webPageDownloader.execute(urlArticle);
+                Picasso.get().load(savedImgUrl).into(picassoImageTarget(getContext(), "imageDir"));
+                downloadFilesToPrivateDirectory(savedWebPageUrlForDownloading);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 if (imagePath == null || webPageContent == null) {
 
                     // TODO: 12.06.2019 заменить,переделать
@@ -245,8 +236,6 @@ public class EmailedTab extends Fragment {
                 }
                 SavedArticles savedArticle = new SavedArticles(savedTitle, imagePath);
                 dbHandler.addArticle(savedArticle);
-
-                Log.d(TAG, "EmailedTab: pressed add to favorites article with title: " + item.getTitle().toString());
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -296,7 +285,7 @@ public class EmailedTab extends Fragment {
                                 Log.d(TAG, "EmailedTab: fail" + e.getMessage());
                             }
                         }
-                        Log.i("DebuggingLogs", "EmailedTab: image saved to >>>" + myImageFile.getAbsolutePath());
+                        Log.d("DebuggingLogs", "EmailedTab: image saved to >>>" + myImageFile.getAbsolutePath());
 
                     }
                 }).start();
@@ -318,9 +307,9 @@ public class EmailedTab extends Fragment {
         };
     }
 
-    private void downloadFilesToPrivateDirectory() {
+    private void downloadFilesToPrivateDirectory(String urlForDownloading) {
         if (isDownloadManagerAvailable(getActivity().getBaseContext())) {
-            fileName = guessFileName(url, null, MimeTypeMap.getFileExtensionFromUrl(url));
+            fileName = guessFileName(urlForDownloading, null, MimeTypeMap.getFileExtensionFromUrl(urlForDownloading));
             File file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
 
 //            if (!file.mkdirs()) {
@@ -330,7 +319,7 @@ public class EmailedTab extends Fragment {
                 //Create a DownloadManager.Request with all the information necessary to start the download
                 DownloadManager.Request request = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    request = new DownloadManager.Request(Uri.parse(url))
+                    request = new DownloadManager.Request(Uri.parse(urlForDownloading))
                             .setTitle(fileName)//Title of the downloading notification
                             .setDescription("Downloading")//description of the downloading notification
                             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)//visibility downloading notification(VISIBILITY_VISIBLE)
@@ -340,7 +329,6 @@ public class EmailedTab extends Fragment {
                             .setAllowedOverRoaming(true)
                             .setVisibleInDownloadsUi(true);
                 }
-
 
                 pathToFile = file.getAbsolutePath().toString();
 
@@ -358,7 +346,7 @@ public class EmailedTab extends Fragment {
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             //Checking if the received broadcast is for our enqueued download by matching download id
             if (downloadID == id) {
-                Toast.makeText(getActivity().getBaseContext(), "Download Completed " + fileName.toString(), Toast.LENGTH_LONG).show();
+                Log.d("DebuggingLogs", "EmailedTab: download of web page completed >>> " + pathToFile);
             }
         }
     };
