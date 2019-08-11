@@ -34,6 +34,7 @@ import com.example.android.news.Adapter.EmailedNewsAdapter;
 import com.example.android.news.Common.Common;
 import com.example.android.news.Database.DBHandler;
 import com.example.android.news.Database.SavedArticles;
+import com.example.android.news.Download.WebPageDownloadHelper;
 import com.example.android.news.Interface.NewsService;
 import com.example.android.news.MainActivity;
 import com.example.android.news.Model.Emailed.EmailedNews;
@@ -91,14 +92,14 @@ public class EmailedTab extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = "DebuggingLogs";
     String webHotURL = "";
-    String webPageContent;
+    String savedTitle, savedImgUrl, savedWebPageUrlForDownloading;
     EmailedNewsAdapter adapter;
     RecyclerView lstNews;
     RecyclerView.LayoutManager layoutManager;
     String imagePath;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     private long downloadID;
-    private String pathToFile,fileName;
+    private String pathToFile, fileName;
     private DownloadManager.Request request;
     private static int REQUEST_CODE = 1;
 
@@ -130,8 +131,10 @@ public class EmailedTab extends Fragment {
         ActivityCompat.requestPermissions(this.getActivity(), new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, REQUEST_CODE);
+
         getActivity().registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         loadNewsEmailed(false);
+
 
         imageViewEmailed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,19 +148,19 @@ public class EmailedTab extends Fragment {
     }
 
     private void loadNewsEmailed(boolean isRefreshed) {
-        if(!isRefreshed){
+        if (!isRefreshed) {
             dialog.show();
-        compositeDisposable.add(mService.getEmailedArticles()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<EmailedNews>() {
-                    @Override
-                    public void accept(EmailedNews emailedNews) throws Exception {
-                        displayData(emailedNews);
-                        dialog.dismiss();
-                    }
-                }));
-        }else// If from Swipe to Refresh
+            compositeDisposable.add(mService.getEmailedArticles()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<EmailedNews>() {
+                        @Override
+                        public void accept(EmailedNews emailedNews) throws Exception {
+                            displayData(emailedNews);
+                            dialog.dismiss();
+                        }
+                    }));
+        } else// If from Swipe to Refresh
         {
             dialog.show();
             //fetch new data
@@ -217,25 +220,28 @@ public class EmailedTab extends Fragment {
         switch (item.getItemId()) {
             case 121:
                 Log.d(TAG, "EmailedTab: pressed add to favorites in Emailed tab");
-                String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
-                String savedImgUrl = adapter.getItemImageUrlTransaction(item.getGroupId());
-                String savedWebPageUrlForDownloading=adapter.getItemArticleUrlTransaction(item.getGroupId());
-
+                savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
+                savedImgUrl = adapter.getItemImageUrlTransaction(item.getGroupId());
+                savedWebPageUrlForDownloading = adapter.getItemArticleUrlTransaction(item.getGroupId());
+// TODO: 10.08.2019 add callback to picaso (сейчас не реализован т.к. есть более длительный процесс загрузки полной страницы )
                 Picasso.get().load(savedImgUrl).into(picassoImageTarget(getContext(), "imageDir"));
+
                 downloadFilesToPrivateDirectory(savedWebPageUrlForDownloading);
+                // TODO: 10.08.2019 можно потом вынести его отдельно + в интенте передавать параметры
+//                WebPageDownloadHelper.downloadFilesToPrivateDirectory(getContext(),savedWebPageUrlForDownloading);
 
-                if (imagePath == null || webPageContent == null) {
-
-                    // TODO: 12.06.2019 заменить,переделать
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        Log.d(TAG, "EmailedTab: fail" + e.getMessage());
-                    }
-                }
-                SavedArticles savedArticle = new SavedArticles(savedTitle, imagePath);
-                dbHandler.addArticle(savedArticle);
+//                if (imagePath == null || webPageContent == null) {
+//
+//                    // TODO: 12.06.2019 заменить,переделать
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                        Log.d(TAG, "EmailedTab: fail" + e.getMessage());
+//                    }
+//                }
+//                SavedArticles savedArticle = new SavedArticles(savedTitle, imagePath);
+//                dbHandler.addArticle(savedArticle);
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -257,7 +263,7 @@ public class EmailedTab extends Fragment {
 
     }
 
-     Target picassoImageTarget(Context context, final String imageDir) {
+    Target picassoImageTarget(Context context, final String imageDir) {
         Log.d("picassoImageTarget", " picassoImageTarget");
         ContextWrapper cw = new ContextWrapper(context);
         final File directory = cw.getDir(imageDir, Context.MODE_PRIVATE); // path to /data/data/yourapp/app_imageDir
@@ -344,9 +350,19 @@ public class EmailedTab extends Fragment {
         public void onReceive(Context context, Intent intent) {
 //            Fetching the download id received with the broadcast
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            // TODO: 10.08.2019 передать downloadID и String path to file
             //Checking if the received broadcast is for our enqueued download by matching download id
             if (downloadID == id) {
                 Log.d("DebuggingLogs", "EmailedTab: download of web page completed >>> " + pathToFile);
+                // TODO: 10.08.2019 save to database
+                if (savedTitle == null && imagePath == null && pathToFile == null) {
+                    Toast.makeText(getActivity().getBaseContext(), "Download is not available.Check your internet connection", Toast.LENGTH_LONG).show();
+                    Log.d("DebuggingLogs", "EmailedTab: PROBLEM !!! >>>" + "savedTitle = "+savedTitle+";"+"imagePath = "+imagePath+";"+"savedWebPageUrlForDownloading = "+savedWebPageUrlForDownloading);
+                    return;
+                }
+                //add to database
+                SavedArticles savedArticle = new SavedArticles(savedTitle, imagePath, pathToFile);
+                dbHandler.addArticle(savedArticle);
             }
         }
     };
@@ -360,7 +376,7 @@ public class EmailedTab extends Fragment {
         return false;
     }
 
-     // Checks if external storage is available for read and write
+    // Checks if external storage is available for read and write
 
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
