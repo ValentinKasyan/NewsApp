@@ -28,7 +28,8 @@ public class DetailArticle extends AppCompatActivity {
         setContentView(R.layout.activity_detail_article);
 
         dialog = new SpotsDialog(this);
-        dialog.show();
+        // TODO: 12.08.2019 commit
+//        dialog.show();
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());

@@ -9,8 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,9 +35,7 @@ import com.example.android.news.Adapter.EmailedNewsAdapter;
 import com.example.android.news.Common.Common;
 import com.example.android.news.Database.DBHandler;
 import com.example.android.news.Database.SavedArticles;
-import com.example.android.news.Download.WebPageDownloadHelper;
 import com.example.android.news.Interface.NewsService;
-import com.example.android.news.MainActivity;
 import com.example.android.news.Model.Emailed.EmailedNews;
 import com.example.android.news.Model.Emailed.EmailedResults;
 import com.example.android.news.R;
@@ -46,34 +45,7 @@ import com.squareup.picasso.Target;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-
-
-import android.Manifest;
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.Button;
-import android.widget.Toast;
-
-import java.io.File;
-
-import static android.webkit.URLUtil.guessFileName;
 
 import dmax.dialog.SpotsDialog;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -107,6 +79,17 @@ public class EmailedTab extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+//        ConnectivityManager connMgr = (ConnectivityManager) getActivity()
+//                .getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        final NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+//        if (networkInfo == null ) {
+//            Log.d(TAG, "EmailedTab: networkInfo >>> disconnected--> networkInfo == null");
+////            if(!networkInfo.isConnected()){
+////                Log.d(TAG, "EmailedTab: networkInfo >>> disconnected--> !networkInfo.isConnected()");
+////            }
+//        }
+
         View rootView = inflater.inflate(R.layout.tab_emailed, container, false);
         //Init Service
         mService = Common.getNewsService();
@@ -114,6 +97,16 @@ public class EmailedTab extends Fragment {
         dialog = new SpotsDialog(getContext());
         //Init View
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshForEmailed);
+
+//        if (networkInfo != null && networkInfo.isConnected()) {
+//            // fetch data
+//            Log.d(TAG, "EmailedTab: networkInfo.isConnected()");
+//
+//        } else {
+//            // display error
+//            Log.d(TAG, "EmailedTab: networkInfo >>> disconnected");
+//
+//        }
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -133,8 +126,8 @@ public class EmailedTab extends Fragment {
         }, REQUEST_CODE);
 
         getActivity().registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-        loadNewsEmailed(false);
 
+        loadNewsEmailed(false);
 
         imageViewEmailed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -230,18 +223,6 @@ public class EmailedTab extends Fragment {
                 // TODO: 10.08.2019 можно потом вынести его отдельно + в интенте передавать параметры
 //                WebPageDownloadHelper.downloadFilesToPrivateDirectory(getContext(),savedWebPageUrlForDownloading);
 
-//                if (imagePath == null || webPageContent == null) {
-//
-//                    // TODO: 12.06.2019 заменить,переделать
-//                    try {
-//                        Thread.sleep(1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                        Log.d(TAG, "EmailedTab: fail" + e.getMessage());
-//                    }
-//                }
-//                SavedArticles savedArticle = new SavedArticles(savedTitle, imagePath);
-//                dbHandler.addArticle(savedArticle);
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -328,7 +309,8 @@ public class EmailedTab extends Fragment {
                     request = new DownloadManager.Request(Uri.parse(urlForDownloading))
                             .setTitle(fileName)//Title of the downloading notification
                             .setDescription("Downloading")//description of the downloading notification
-                            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)//visibility downloading notification(VISIBILITY_VISIBLE)
+//                            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)//visibility downloading notification(VISIBILITY_VISIBLE)
+                            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                             .setDestinationUri(Uri.fromFile(file))//By default, downloads are saved to a generated filename in the shared download cache and may be deleted by the system at any time to reclaim space.
                             .setRequiresCharging(false)// Set if charging is required to begin the download(Установите, если для начала загрузки требуется зарядка)
                             .setAllowedOverMetered(true)// Set if download is allowed on Mobile network
@@ -357,7 +339,7 @@ public class EmailedTab extends Fragment {
                 // TODO: 10.08.2019 save to database
                 if (savedTitle == null && imagePath == null && pathToFile == null) {
                     Toast.makeText(getActivity().getBaseContext(), "Download is not available.Check your internet connection", Toast.LENGTH_LONG).show();
-                    Log.d("DebuggingLogs", "EmailedTab: PROBLEM !!! >>>" + "savedTitle = "+savedTitle+";"+"imagePath = "+imagePath+";"+"savedWebPageUrlForDownloading = "+savedWebPageUrlForDownloading);
+                    Log.d("DebuggingLogs", "EmailedTab: PROBLEM !!! >>>" + "savedTitle = " + savedTitle + ";" + "imagePath = " + imagePath + ";" + "savedWebPageUrlForDownloading = " + savedWebPageUrlForDownloading);
                     return;
                 }
                 //add to database
