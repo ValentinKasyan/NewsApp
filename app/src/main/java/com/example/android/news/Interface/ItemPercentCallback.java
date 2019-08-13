@@ -4,6 +4,5 @@ import com.example.android.news.Model.Shared.SharedResult;
 
 //       used only in SharedResult
 public interface ItemPercentCallback {
-
     void updateDownloadableItem(SharedResult downloadableItem);
 }

@@ -1,7 +1,6 @@
 package com.example.android.news;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -14,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MenuItem;
 
 import com.example.android.news.Adapter.SavedNewsAdapter;
 import com.example.android.news.Database.DBHandler;
@@ -134,22 +132,6 @@ public class MainActivity extends AppCompatActivity {
             adapter = new SavedNewsAdapter(savedArticlesList, this.getBaseContext());
             lstNews.setAdapter(adapter);
             swipeRefreshLayout.setRefreshing(false);
-        }
-    }
-
-    //Floating context menu
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case 221:
-                Log.d(DEBUG, "SavedTab: pressed delete ");
-                String title = adapter.removeItem(item.getGroupId());
-                dbHandler.deleteArticles(title);
-                ContextWrapper cw = new ContextWrapper(this);
-                Log.d(DEBUG, "SavedTab: pressed delete on favorites article with title: " + item.getTitle().toString());
-                return true;
-            default:
-                return super.onContextItemSelected(item);
         }
     }
 
