@@ -79,17 +79,6 @@ public class EmailedTab extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        ConnectivityManager connMgr = (ConnectivityManager) getActivity()
-//                .getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        final NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-//        if (networkInfo == null ) {
-//            Log.d(TAG, "EmailedTab: networkInfo >>> disconnected--> networkInfo == null");
-////            if(!networkInfo.isConnected()){
-////                Log.d(TAG, "EmailedTab: networkInfo >>> disconnected--> !networkInfo.isConnected()");
-////            }
-//        }
-
         View rootView = inflater.inflate(R.layout.tab_emailed, container, false);
         //Init Service
         mService = Common.getNewsService();
@@ -97,16 +86,6 @@ public class EmailedTab extends Fragment {
         dialog = new SpotsDialog(getContext());
         //Init View
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshForEmailed);
-
-//        if (networkInfo != null && networkInfo.isConnected()) {
-//            // fetch data
-//            Log.d(TAG, "EmailedTab: networkInfo.isConnected()");
-//
-//        } else {
-//            // display error
-//            Log.d(TAG, "EmailedTab: networkInfo >>> disconnected");
-//
-//        }
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -132,9 +111,11 @@ public class EmailedTab extends Fragment {
         imageViewEmailed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent detail = new Intent(getActivity().getBaseContext(), DetailArticle.class);
-                detail.putExtra("webURL", webHotURL);
-                startActivity(detail);
+                Intent emailedIntent = new Intent(getActivity().getBaseContext(), DetailArticle.class);
+                // TODO: 13.08.2019 add new TAG
+                emailedIntent.putExtra("source", "emailed");
+                emailedIntent.putExtra("webURL", webHotURL);
+                startActivity(emailedIntent);
             }
         });
         return rootView;

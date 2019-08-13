@@ -98,6 +98,8 @@ public class EmailedNewsAdapter extends RecyclerView.Adapter<EmailedNewsViewHold
             public void onClick(View view, int position, boolean isLongClick) {
                 Intent detail = new Intent(context, DetailArticle.class);
                 detail.putExtra("webURL", articleList.get(position).getUrl());
+                // TODO: 13.08.2019 add to other articles 
+                detail.putExtra("source", "emailed");
                 detail.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(detail);
             }

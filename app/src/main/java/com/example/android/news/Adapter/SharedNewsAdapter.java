@@ -186,6 +186,7 @@ public class SharedNewsAdapter extends RecyclerView.Adapter<SharedNewsViewHolder
             public void onClick(View view, int position, boolean isLongClick) {
                 Intent detail = new Intent(contextWeakReference.get(), DetailArticle.class);
                 detail.putExtra("webURL", itemsList.get(position).getUrl());
+                detail.putExtra("source", "shared");
                 detail.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 contextWeakReference.get().startActivity(detail);
             }
@@ -199,20 +200,6 @@ public class SharedNewsAdapter extends RecyclerView.Adapter<SharedNewsViewHolder
         }
         return itemsList.size();
     }
-//
-//    public String getItemTitleTransaction(int position) {
-//        return articleList.get(position).getTitle();
-//    }
-//
-//    public String getItemImageUrlTransaction(int position) {
-//        return articleList.get(position).getMedia()
-//                .get(0).getMediaMetadata()
-//                .get(2).getUrl();
-//    }
-//
-//    public String getItemArticleUrlTransaction(int position) {
-//        return articleList.get(position).getUrl();
-//    }
 
 //This callback is called when the user clicks on any item for download.
     @Override

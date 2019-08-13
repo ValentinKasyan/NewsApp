@@ -21,6 +21,9 @@ public class DetailArticle extends AppCompatActivity {
     private String pathToFile;
     SpotsDialog dialog;
     private static final String TAG = "DebuggingLogs";
+    //for manage intent
+//    public static final String TAG_EMAILED = "EmailedTab";
+//    public static final String TAG_SAVED = "SavedNewsAdapter";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,27 +42,61 @@ public class DetailArticle extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
-        // TODO: 11.08.2019 uncomit 
-//        //page loading from a network
+        // TODO: 11.08.2019 uncomit
+        //page loading from a network
 //        if (getIntent() != null) {
 //            if (!getIntent().getStringExtra("webURL").isEmpty())
 //                webView.loadUrl(getIntent().getStringExtra("webURL"));
-//        }
+//        }else
+
+
         //page loading from external storage
+        // TODO: 13.08.2019
+//        if (getIntent() != null) {
+//            if (getIntent().getStringExtra("pathToFile").isEmpty()) {
+//                Log.d("DebuggingLogs", "DetailArticle: Download failed !!! pathToFile is Empty >>>" + getIntent().getStringExtra("pathToFile").toString());
+//            } else if (!isExternalStorageReadable()) {
+//                Toast.makeText(this, "Download failed " + " External Storage is unreadable ! ", Toast.LENGTH_LONG).show();
+//                Log.d("DebuggingLogs", "DetailArticle: Download failed !!! External Storage is unreadable !" );
+//            } else {
+//                webView.getSettings().setSaveFormData(true);
+//                webView.getSettings().setBuiltInZoomControls(true);
+//                webView.setWebViewClient(new MyWebViewClient());
+//                pathToFile = getIntent().getStringExtra("pathToFile");
+//                String path = "file://" + pathToFile;
+//                webView.loadUrl(path);
+//            }
+//        }
+        // rebuild
         if (getIntent() != null) {
-            if (getIntent().getStringExtra("pathToFile").isEmpty()) {
-                Log.d("DebuggingLogs", "DetailArticle: Download failed !!! pathToFile is Empty >>>" + getIntent().getStringExtra("pathToFile").toString());
-            } else if (!isExternalStorageReadable()) {
-                Toast.makeText(this, "Download failed " + " External Storage is unreadable ! ", Toast.LENGTH_LONG).show();
-                Log.d("DebuggingLogs", "DetailArticle: Download failed !!! External Storage is unreadable !" );
+            if (getIntent().getExtras() != null) {
+                String from = getIntent().getStringExtra("source");
+                if (from.equals("saved")) {
+                    //page loading from external storage
+                    if (getIntent().getStringExtra("pathToFile").isEmpty()) {
+                        Log.d("DebuggingLogs", "DetailArticle: Download failed !!! pathToFile is Empty >>>" + getIntent().getStringExtra("pathToFile").toString());
+                    } else if (!isExternalStorageReadable()) {
+                        Toast.makeText(this, "Download failed " + " External Storage is unreadable ! ", Toast.LENGTH_LONG).show();
+                        Log.d("DebuggingLogs", "DetailArticle: Download failed !!! External Storage is unreadable !");
+                    } else {
+                        webView.getSettings().setSaveFormData(true);
+                        webView.getSettings().setBuiltInZoomControls(true);
+                        webView.setWebViewClient(new MyWebViewClient());
+                        pathToFile = getIntent().getStringExtra("pathToFile");
+                        String path = "file://" + pathToFile;
+                        webView.loadUrl(path);
+                    }
+                } else if (from.equals("emailed")||from.equals("shared")){
+                    //page loading from a network
+                    if (!getIntent().getStringExtra("webURL").isEmpty())
+                        webView.loadUrl(getIntent().getStringExtra("webURL"));
+
+                }
             } else {
-                webView.getSettings().setSaveFormData(true);
-                webView.getSettings().setBuiltInZoomControls(true);
-                webView.setWebViewClient(new MyWebViewClient());
-                pathToFile = getIntent().getStringExtra("pathToFile");
-                String path = "file://" + pathToFile;
-                webView.loadUrl(path);
+                Log.d("DebuggingLogs", "DetailArticle: getIntent().getExtras() =  " + getIntent().getExtras().toString());
             }
+        } else {
+            Log.d("DebuggingLogs", "DetailArticle: getIntent() = " + getIntent().toString());
         }
     }
 

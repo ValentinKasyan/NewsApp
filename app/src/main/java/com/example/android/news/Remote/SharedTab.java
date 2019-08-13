@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.android.news.Adapter.SharedNewsAdapter;
 import com.example.android.news.Common.Common;
@@ -105,9 +106,11 @@ public class SharedTab extends Fragment {
         imageViewShared.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent detail = new Intent(getActivity().getBaseContext(), DetailArticle.class);
-                detail.putExtra("webURL", webHotURL);
-                startActivity(detail);
+                Toast.makeText(getActivity().getBaseContext(), "This feature is not available in this version", Toast.LENGTH_LONG).show();
+//                Intent detail = new Intent(getActivity().getBaseContext(), DetailArticle.class);
+//                detail.putExtra("webURL", webHotURL);
+//                detail.putExtra("source", "shared");
+//                startActivity(detail);
             }
         });
         return rootView;
