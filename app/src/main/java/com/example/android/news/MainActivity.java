@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
             lstNews.setLayoutManager(layoutManager);
             dbHandler = new DBHandler(this, null, null, 1);
             loadNews(false);
-
         }
         if (isOnline()) {
             mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
