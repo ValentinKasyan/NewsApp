@@ -21,9 +21,6 @@ public class DetailArticle extends AppCompatActivity {
     private String pathToFile;
     SpotsDialog dialog;
     private static final String TAG = "DebuggingLogs";
-    //for manage intent
-//    public static final String TAG_EMAILED = "EmailedTab";
-//    public static final String TAG_SAVED = "SavedNewsAdapter";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +28,7 @@ public class DetailArticle extends AppCompatActivity {
         setContentView(R.layout.activity_detail_article);
 
         dialog = new SpotsDialog(this);
-        // TODO: 12.08.2019 commit
-//        dialog.show();
+        dialog.show();
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());
@@ -42,42 +38,16 @@ public class DetailArticle extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
-        // TODO: 11.08.2019 uncomit
-        //page loading from a network
-//        if (getIntent() != null) {
-//            if (!getIntent().getStringExtra("webURL").isEmpty())
-//                webView.loadUrl(getIntent().getStringExtra("webURL"));
-//        }else
-
-
-        //page loading from external storage
-        // TODO: 13.08.2019
-//        if (getIntent() != null) {
-//            if (getIntent().getStringExtra("pathToFile").isEmpty()) {
-//                Log.d("DebuggingLogs", "DetailArticle: Download failed !!! pathToFile is Empty >>>" + getIntent().getStringExtra("pathToFile").toString());
-//            } else if (!isExternalStorageReadable()) {
-//                Toast.makeText(this, "Download failed " + " External Storage is unreadable ! ", Toast.LENGTH_LONG).show();
-//                Log.d("DebuggingLogs", "DetailArticle: Download failed !!! External Storage is unreadable !" );
-//            } else {
-//                webView.getSettings().setSaveFormData(true);
-//                webView.getSettings().setBuiltInZoomControls(true);
-//                webView.setWebViewClient(new MyWebViewClient());
-//                pathToFile = getIntent().getStringExtra("pathToFile");
-//                String path = "file://" + pathToFile;
-//                webView.loadUrl(path);
-//            }
-//        }
-        // rebuild
         if (getIntent() != null) {
             if (getIntent().getExtras() != null) {
                 String from = getIntent().getStringExtra("source");
                 if (from.equals("saved")) {
                     //page loading from external storage
                     if (getIntent().getStringExtra("pathToFile").isEmpty()) {
-                        Log.d("DebuggingLogs", "DetailArticle: Download failed !!! pathToFile is Empty >>>" + getIntent().getStringExtra("pathToFile").toString());
+                        Log.d(TAG, "DetailArticle: Download failed !!! pathToFile is Empty >>>" + getIntent().getStringExtra("pathToFile").toString());
                     } else if (!isExternalStorageReadable()) {
                         Toast.makeText(this, "Download failed " + " External Storage is unreadable ! ", Toast.LENGTH_LONG).show();
-                        Log.d("DebuggingLogs", "DetailArticle: Download failed !!! External Storage is unreadable !");
+                        Log.d(TAG, "DetailArticle: Download failed !!! External Storage is unreadable !");
                     } else {
                         webView.getSettings().setSaveFormData(true);
                         webView.getSettings().setBuiltInZoomControls(true);
@@ -86,17 +56,17 @@ public class DetailArticle extends AppCompatActivity {
                         String path = "file://" + pathToFile;
                         webView.loadUrl(path);
                     }
-                } else if (from.equals("emailed")||from.equals("shared")){
+                } else if (from.equals("emailed")||from.equals("shared")||from.equals("viewed")){
                     //page loading from a network
                     if (!getIntent().getStringExtra("webURL").isEmpty())
                         webView.loadUrl(getIntent().getStringExtra("webURL"));
 
                 }
             } else {
-                Log.d("DebuggingLogs", "DetailArticle: getIntent().getExtras() =  " + getIntent().getExtras().toString());
+                Log.d(TAG, "DetailArticle: getIntent().getExtras() =  " + getIntent().getExtras().toString());
             }
         } else {
-            Log.d("DebuggingLogs", "DetailArticle: getIntent() = " + getIntent().toString());
+            Log.d(TAG, "DetailArticle: getIntent() = " + getIntent().toString());
         }
     }
 
@@ -104,7 +74,7 @@ public class DetailArticle extends AppCompatActivity {
 
         @TargetApi(Build.VERSION_CODES.N)
         @Override
-        //show the web page in webview but not in web browser
+        //show the web page in webView but not in web browser
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             view.loadUrl(request.getUrl().toString());
             return true;

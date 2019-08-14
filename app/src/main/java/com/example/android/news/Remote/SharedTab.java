@@ -80,12 +80,15 @@ public class SharedTab extends Fragment {
         dialog = new SpotsDialog(getContext());
         //Init View
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshForShared);
-        // TODO: 12.08.2019 check network
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadNewsShared(true);
+                if(isOnline()){
+                    loadNewsShared(true);
+                }else{
+                    Toast.makeText(getActivity(), "No internet connection. Restart the application", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -95,9 +98,13 @@ public class SharedTab extends Fragment {
         layoutManager = new LinearLayoutManager(getContext());
         lstNews.setLayoutManager(layoutManager);
         dbHandler = new DBHandler(getContext(), null, null, 2);
-        loadNewsShared(false);
+        if(isOnline()){
+            loadNewsShared(true);
+        }else{
+            Toast.makeText(getActivity(), "No internet connection. Restart the application", Toast.LENGTH_LONG).show();
+        }
+//        loadNewsShared(false);
 
-        // TODO: 06.08.2019 add permissions() and registerReceiver- delete this
         ActivityCompat.requestPermissions(this.getActivity(), new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, REQUEST_CODE);
@@ -119,6 +126,7 @@ public class SharedTab extends Fragment {
     private void loadNewsShared(boolean isRefreshed) {
         if (!isRefreshed) {
             dialog.show();
+            if(isOnline()) {
             compositeDisposable.add(mService.getSharedArticles()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -129,7 +137,7 @@ public class SharedTab extends Fragment {
                             dialog.dismiss();
                         }
 
-                    }));
+                    }));}
         } else// If from Swipe to Refresh
         {
             dialog.show();
@@ -193,57 +201,11 @@ public class SharedTab extends Fragment {
         lstNews.setAdapter(adapter);
     }
 
-    // TODO: 13.07.2019 rename removeFirstItem to downloadableItemList
     @Override
     public void onStop() {
         compositeDisposable.clear();
         super.onStop();
     }
-
-
-//    //Floating context menu
-//    @Override
-//    public boolean onContextItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case 121:
-//                Log.d(TAG, "SharedTab: pressed add to favorites in Emailed tab");
-//                DownloadingStatus downloadingStatus = imageDownloadIcon.getDownloadingStatus();
-//                //Only when the icon is in not downloaded state, then do the following.
-//                if (downloadingStatus == DownloadingStatus.NOT_DOWNLOADED){
-//                    setI
-//                }
-//
-//                String savedTitle = adapter.getItemTitleTransaction(item.getGroupId());
-//                String urlImg = adapter.getItemImageUrlTransaction(item.getGroupId());
-//                Picasso.get().load(urlImg).into(picassoImageTarget(getContext(), "imageDir"));
-//                SharedTab.WebPageDownloader webPageDownloader = new SharedTab.WebPageDownloader();
-//                String urlArticle = adapter.getItemArticleUrlTransaction(item.getGroupId());
-//                try {
-//
-//                    webPageDownloader.execute(urlArticle);
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                if (imagePath == null || webPageContent == null) {
-//
-//                    // TODO: 12.06.2019 заменить,переделать
-//                    try {
-//                        Thread.sleep(1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                        Log.d(TAG, "SharedTab: fail" + e.getMessage());
-//                    }
-//                }
-//                SavedArticles savedArticle = new SavedArticles(savedTitle, imagePath);
-//                dbHandler.addArticle(savedArticle);
-//
-//                Log.d(TAG, "SharedTab: pressed add to favorites article with title: " + item.getTitle().toString());
-//                return true;
-//            default:
-//                return super.onContextItemSelected(item);
-//        }
-//    }
 
     private void getImage(@NonNull SharedNews sharedNews) {
         Picasso.get()
@@ -310,6 +272,7 @@ public class SharedTab extends Fragment {
         };
     }
 
+    // TODO: 14.08.2019  проверить нужно ли это
     public class WebPageDownloader extends AsyncTask<String, Void, String> {
 
 
@@ -354,5 +317,14 @@ public class SharedTab extends Fragment {
 
     void setWebPageContent(String webPageContent) {
         this.webPageContent = webPageContent;
+    }
+
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 }

@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
     SpotsDialog dialog;
     SwipeRefreshLayout swipeRefreshLayout;
-    private static final String DEBUG = "DebuggingLogs";
 
     SavedNewsAdapter adapter;
     RecyclerView lstNews;

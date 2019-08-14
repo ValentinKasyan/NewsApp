@@ -36,7 +36,6 @@ public class DownloadItemHelper {
                 downloadableItem.getDownloadingStatus());
     }
 
-    // TODO: 10.07.2019 запись в SharedPreferences статусов
     public static void setDownloadStatus(Context context, String itemId, DownloadingStatus
             downloadingStatus) {
         SharedPreferences preferences =
