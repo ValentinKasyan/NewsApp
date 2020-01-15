@@ -90,7 +90,6 @@ public class ViewedTab extends Fragment {
                 if (isOnline()) {
                     loadNewsViewed(true);
                 } else {
-                    // TODO: 14.08.2019 1 проверка  
                     Toast.makeText(getActivity(), "No internet connection. Restart the application", Toast.LENGTH_LONG).show();
                 }
             }

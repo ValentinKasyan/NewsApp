@@ -28,12 +28,22 @@
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/top_author_shared"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|left"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:fontFamily="sans-serif-light"
+                    android:textSize="25sp" />
+
+                <TextView
                     android:id="@+id/top_title_shared"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|left"
-                    android:layout_marginBottom="30dp"
                     android:layout_marginLeft="30dp"
+                    android:layout_marginBottom="30dp"
                     android:fontFamily="sans-serif-light"
                     android:textColor="#808080"
                     android:textSize="25sp"

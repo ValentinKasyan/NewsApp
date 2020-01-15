@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.android.news.Download.DownloadRequestsSubscriber;
 import com.example.android.news.Interface.ItemClickListener;
 import com.example.android.news.Model.Emailed.EmailedResults;
 import com.example.android.news.R;

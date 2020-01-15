@@ -1,7 +1,7 @@
 
 package com.example.android.news.Model.Shared;
 
-import com.example.android.news.Download.DownloadingStatus;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -85,20 +85,9 @@ public class SharedResult {
         this.positionId = positionId;
     }
 
-    //Downloading status i.e NOT_DOWNLOADED, IN_PROGRESS, WAITING or DOWNLOADED
-    private DownloadingStatus downloadingStatus;
-
     private int itemDownloadPercent;
 
     private long lastEmittedDownloadPercent = -1;
-
-    public DownloadingStatus getDownloadingStatus() {
-        return downloadingStatus;
-    }
-
-    public void setDownloadingStatus(DownloadingStatus downloadingStatus) {
-        this.downloadingStatus = downloadingStatus;
-    }
 
     public int getItemDownloadPercent() {
         return itemDownloadPercent;

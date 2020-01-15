@@ -1,7 +1,7 @@
 
 package com.example.android.news.Model.Emailed;
 
-import com.example.android.news.Download.DownloadingStatus;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -71,7 +71,6 @@ public class EmailedResults {
     @Expose
     private String uri;
 
-    private DownloadingStatus downloadingStatus;
 
     private int itemDownloadPercent;
 
@@ -237,13 +236,6 @@ public class EmailedResults {
         this.uri = uri;
     }
 
-    public DownloadingStatus getDownloadingStatus() {
-        return downloadingStatus;
-    }
-
-    public void setDownloadingStatus(DownloadingStatus downloadingStatus) {
-        this.downloadingStatus = downloadingStatus;
-    }
 
     public int getItemDownloadPercent() {
         return itemDownloadPercent;
