@@ -52,7 +52,6 @@ public class SharedTab extends Fragment {
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     private DownloadManager.Request request;
     private static int REQUEST_CODE = 1;
-
     DownloadHelper downloadHelper;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
