@@ -140,7 +140,7 @@ public class ViewedTab extends Fragment {
 
     private void displayData(ViewedNews viewedNews) {
 
-        if (viewedNews != null && viewedNews.getResults() != null ) {
+        if (viewedNews != null && viewedNews.getResults() != null) {
             ViewedResult results = viewedNews.getResults().get(0);
             //get first article
             if (results != null && results.getMedia().get(0).getMediaMetadata().get(2).getUrl() != null) {

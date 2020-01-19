@@ -141,7 +141,7 @@ public class DownloadHelper {
                 Log.d(TAG, "SharedTab: download of web page completed >>> " + pathToFile);
                 if (savedTitleLocal == null || imagePath == null || pathToFile == null) {
                     Toast.makeText(context, "Download is not available.Check your internet connection", Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "SharedTab: PROBLEM !!! >>>" + "savedTitle = " + savedTitleLocal + ";" + "imagePath = " + imagePath + ";" );
+                    Log.d(TAG, "SharedTab: PROBLEM !!! >>>" + "savedTitle = " + savedTitleLocal + ";" + "imagePath = " + imagePath + ";");
                     return;
                 }
                 //add to database

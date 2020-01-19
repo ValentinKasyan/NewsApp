@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.news.Adapter.SavedNewsAdapter;
 import com.example.android.news.Database.DBHandler;
@@ -31,10 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private static final String TAG = "DebuggingLogs";
-
     SpotsDialog dialog;
     SwipeRefreshLayout swipeRefreshLayout;
-
     SavedNewsAdapter adapter;
     RecyclerView lstNews;
     RecyclerView.LayoutManager layoutManager;
@@ -121,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
                 adapter = new SavedNewsAdapter(savedArticlesList, this.getBaseContext());
                 lstNews.setAdapter(adapter);
             } else {
-                dialog.show();
+                Toast.makeText(this, "No saved articles yet", Toast.LENGTH_LONG).show();
+
             }
         } else// If from Swipe to Refresh
         {

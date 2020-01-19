@@ -56,7 +56,7 @@ public class DetailArticle extends AppCompatActivity {
                         String path = "file://" + pathToFile;
                         webView.loadUrl(path);
                     }
-                } else if (from.equals("emailed")||from.equals("shared")||from.equals("viewed")){
+                } else if (from.equals("emailed") || from.equals("shared") || from.equals("viewed")) {
                     //page loading from a network
                     if (!getIntent().getStringExtra("webURL").isEmpty())
                         webView.loadUrl(getIntent().getStringExtra("webURL"));

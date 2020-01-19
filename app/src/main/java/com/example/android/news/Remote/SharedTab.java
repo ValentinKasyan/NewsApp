@@ -50,7 +50,6 @@ public class SharedTab extends Fragment {
     RecyclerView lstNews;
     RecyclerView.LayoutManager layoutManager;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private DownloadManager.Request request;
     private static int REQUEST_CODE = 1;
     DownloadHelper downloadHelper;
 
